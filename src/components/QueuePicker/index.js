@@ -16,6 +16,8 @@ class QueuePicker extends React.Component<Props> {
 
   render() {
     const { queues, onQueuePick, currentQueueIndex } = this.props;
+    console.log('wwwww', currentQueueIndex);
+    console.log('wwwww', queues);
     return (
       <View
         style={{

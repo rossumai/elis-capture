@@ -25,7 +25,7 @@ export type FlashMode = 'auto' | 'on' | 'off';
 
 type Props = {
   queues: Array<Queue>,
-  currentQueueIndex: number,
+  currentQueueIndex: ?number,
   selectQueue: Function,
   send: Function,
   uploading: boolean,
@@ -200,7 +200,7 @@ class CameraHandler extends React.Component<Props, State> {
               />
             ) : <NoPermission requestPermission={this.requestPermission} />
           }
-        {!!queues && !!queues.length && (
+        {currentQueueIndex !== null && !!queues && !!queues.length && (
           <QueuePicker
             queues={queues}
             currentQueueIndex={currentQueueIndex}

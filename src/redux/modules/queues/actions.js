@@ -4,7 +4,7 @@ import {
   mergeMap,
   pluck,
   catchError,
-  zip,
+  zip, tap,
 } from 'rxjs/operators';
 import { combineEpics, ofType } from 'redux-observable';
 import { AsyncStorage } from 'react-native';
@@ -29,22 +29,28 @@ export const selectQueueFulfilled = () => ({
   type: SELECT_QUEUE_FULFILLED,
 });
 
-export const fetchQueuesFulfilled = (payload, meta) => ({
+export const fetchQueuesFulfilled = payload => ({
   type: FETCH_QUEUES_FULFILLED,
   payload,
-  meta,
 });
 
 const fetchQueuesEpic = action$ =>
   action$.pipe(
     ofType(FETCH_QUEUES),
     mergeMap(() =>
-      zip(
-        authGetJSON(`${apiUrl}/queues?pageSize=15&page=1`),
-        from(AsyncStorage.getItem(QUEUE)),
-      ).pipe(catchError(errorHandler))),
-    map(([, response, currentQueueIndex]) =>
-      fetchQueuesFulfilled(response, { currentQueueIndex })),
+      authGetJSON(`${apiUrl}/queues?pageSize=15&page=1`)
+        .pipe(
+          map(fetchQueuesFulfilled),
+          catchError(errorHandler),
+        )),
+  );
+
+const selectDefaultQueueEpic = action$ =>
+  action$.pipe(
+    ofType(FETCH_QUEUES_FULFILLED),
+    mergeMap(() => from(AsyncStorage.getItem('QUEUE'))),
+    map(index => index || '0'),
+    map(selectQueue),
   );
 
 const selectQueueEpic = action$ =>
@@ -52,8 +58,8 @@ const selectQueueEpic = action$ =>
     ofType(SELECT_QUEUE),
     pluck('payload', 'index'),
     mergeMap(index =>
-      from(AsyncStorage.setItem(QUEUE, index))),
+      from(AsyncStorage.setItem('QUEUE', index))),
     map(selectQueueFulfilled),
   );
 
-export default combineEpics(fetchQueuesEpic, selectQueueEpic);
+export default combineEpics(selectDefaultQueueEpic, fetchQueuesEpic, selectQueueEpic);

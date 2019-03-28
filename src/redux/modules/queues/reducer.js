@@ -20,19 +20,14 @@ type State = ImmutableType<{
 }>;
 const initialState: State = Immutable({
   queues: [],
-  currentQueueIndex: 0,
+  currentQueueIndex: null,
 });
 
 function reducer(state: State = initialState, action: Object) {
   switch (action.type) {
     case FETCH_QUEUES_FULFILLED: {
-      const {
-        payload: { results },
-        meta: { currentQueueIndex },
-      } = action;
-      return state
-        .set('currentQueueIndex', Number(currentQueueIndex) || 0)
-        .set('queues', results);
+      const { payload: { results } } = action;
+      return state.set('queues', results);
     }
 
     case SELECT_QUEUE:
