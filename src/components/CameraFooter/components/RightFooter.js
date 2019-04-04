@@ -15,6 +15,7 @@ type Props = {
   flashMode: FlashMode,
   send: Function,
   showSend: boolean,
+  sizeLimitExceeded: boolean,
 }
 
 const RightFooter = ({
@@ -22,6 +23,7 @@ const RightFooter = ({
   flashMode,
   showSend,
   send,
+  sizeLimitExceeded,
 }: Props) => (
   <View
     style={{
@@ -41,7 +43,11 @@ const RightFooter = ({
       />
     </TouchableWithoutFeedback>
     {showSend && (
-      <TouchableOpacity onPress={send}>
+      <TouchableOpacity
+        onPress={send}
+        disabled={sizeLimitExceeded}
+        style={{ opacity: sizeLimitExceeded ? 0.5 : 1 }}
+      >
         <Icon
           name="send"
           color="white"

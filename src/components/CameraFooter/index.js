@@ -15,6 +15,7 @@ type Props = {
   onFlashModeChange: Function,
   shoot: Function,
   send: Function,
+  sizeLimitExceeded: boolean,
 }
 
 const CameraFooter = ({
@@ -25,6 +26,7 @@ const CameraFooter = ({
   onFlashModeChange,
   flashMode,
   shooting,
+  sizeLimitExceeded,
   send,
 }: Props) => (
   <View
@@ -44,8 +46,9 @@ const CameraFooter = ({
       shooting={shooting}
       pagesCount={pagesCount}
     />
-    <CenterFooter shoot={shoot} />
+    <CenterFooter sizeLimitExceeded={sizeLimitExceeded} shoot={shoot} />
     <RightFooter
+      sizeLimitExceeded={sizeLimitExceeded}
       showSend={!!pagesCount}
       onFlashModeChange={onFlashModeChange}
       flashMode={flashMode}

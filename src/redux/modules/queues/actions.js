@@ -4,12 +4,11 @@ import {
   mergeMap,
   pluck,
   catchError,
-  zip, tap,
 } from 'rxjs/operators';
 import { combineEpics, ofType } from 'redux-observable';
 import { AsyncStorage } from 'react-native';
 import { authGetJSON, errorHandler } from '../../../lib/api';
-import { apiUrl, QUEUE } from '../../../constants/config';
+import { apiUrl } from '../../../constants/config';
 
 export const FETCH_QUEUES = 'FETCH_QUEUES';
 export const FETCH_QUEUES_FULFILLED = 'FETCH_QUEUES_FULFILLED';

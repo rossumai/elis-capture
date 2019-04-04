@@ -14,6 +14,7 @@ type Props = {
   send: Function,
   addPages: Function,
   redo: Function,
+  sizeLimitExceeded: boolean,
 }
 
 const Preview = ({
@@ -24,6 +25,7 @@ const Preview = ({
   removeAll,
   addPages,
   redo,
+  sizeLimitExceeded,
 }: Props) => (
   <View style={styles.Preview}>
     <PreviewPages
@@ -36,6 +38,7 @@ const Preview = ({
       multiple={multiple}
       removeAll={removeAll}
       send={send}
+      sizeLimitExceeded={sizeLimitExceeded}
     />
   </View>
 );

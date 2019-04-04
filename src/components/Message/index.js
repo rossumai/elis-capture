@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 import type { Message as Props } from '../../redux/modules/messages/reducer';
 
 
-const Message = ({ show, text }: Props) => show && (
+export const Message = ({ show, text }: Props) => show && (
   <View style={{
     width: '100%',
     height: '50%',
@@ -24,7 +24,7 @@ const Message = ({ show, text }: Props) => show && (
       opacity: 0.9,
     }}
     >
-      <Text style={{ color: 'white' }}>
+      <Text style={{ color: 'white', textAlign: 'center' }}>
         {text}
       </Text>
     </View>

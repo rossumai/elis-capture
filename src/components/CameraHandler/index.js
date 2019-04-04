@@ -1,11 +1,12 @@
 /* @flow */
 import React from 'react';
-import { Permissions } from 'expo';
+import { Permissions, FileSystem, ImageManipulator } from 'expo';
 import {
   View,
   AsyncStorage,
   Platform,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
 import { set, last } from 'lodash';
 import { connect } from 'react-redux';
@@ -19,7 +20,7 @@ import QueuePicker from '../QueuePicker';
 import UploadIndicator from '../UploadIndicator';
 import type { Queue } from '../../redux/modules/queues/reducer';
 import { FLASHMODE } from '../../constants/config';
-import Message from '../Message';
+import MessageContainer, { Message } from '../Message';
 
 export type FlashMode = 'auto' | 'on' | 'off';
 
@@ -39,7 +40,12 @@ type State = {
   showPreview: boolean,
   redoing: ?number,
   shooting: boolean,
+  sizeLimitExceeded: boolean,
 }
+
+// attachments size limit
+const sizeLimitMB = 15;
+const sizeLimit = 15 * 1024 * 1024;
 
 const flashModes: Array<FlashMode> = ['on', 'off', 'auto'];
 
@@ -56,6 +62,7 @@ class CameraHandler extends React.Component<Props, State> {
       showPreview: false,
       redoing: null,
       shooting: false,
+      sizeLimitExceeded: false,
     };
   }
 
@@ -104,24 +111,38 @@ class CameraHandler extends React.Component<Props, State> {
       const { files, redoing } = this.state;
       // $FlowFixMe
       const photo = await this.camera.takePictureAsync({ quality: 0.5 });
+
+      const resizedPhoto = await ImageManipulator
+        .manipulate(photo.uri, [{ resize: { width: 1240 } }], { compress: 0.5 });
+
+      const resizedInfo = await FileSystem.getInfoAsync(resizedPhoto.uri);
+
+      const newPhoto = { ...resizedPhoto, size: resizedInfo.size };
+
       const newFiles = (typeof redoing === 'number')
-        ? set(files, redoing, photo)
-        : [...files, photo];
+        ? set(files, redoing, newPhoto)
+        : [...files, newPhoto];
+
       const showPreview = typeof redoing === 'number' || files.length === 0;
+
       this.setState({
         files: newFiles,
         showPreview,
         redoing: null,
         shooting: false,
+        sizeLimitExceeded: this.isSizeLimitExceeded(newFiles),
       });
     }
   };
+
+  isSizeLimitExceeded = newFiles => newFiles.reduce((acc, { size }) => acc + size, 0) > sizeLimit
 
   remove = (index) => {
     const { files } = this.state;
     const newFiles = files.filter((_, i) => index !== i);
     this.setState({
       files: newFiles,
+      sizeLimitExceeded: this.isSizeLimitExceeded(newFiles),
       showPreview: newFiles.length !== 0,
     });
   }
@@ -130,6 +151,7 @@ class CameraHandler extends React.Component<Props, State> {
     this.setState({
       files: [],
       showPreview: false,
+      sizeLimitExceeded: false,
     });
   }
 
@@ -165,11 +187,12 @@ class CameraHandler extends React.Component<Props, State> {
       flashMode,
       showPreview,
       shooting,
+      sizeLimitExceeded,
     } = this.state;
     const { queues, currentQueueIndex, uploading } = this.props;
     return (
       <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-        <Message />
+        <MessageContainer />
         {uploading && <UploadIndicator />}
         {permissionsGranted
           ? showPreview
@@ -182,11 +205,13 @@ class CameraHandler extends React.Component<Props, State> {
                 addPages={this.addPages}
                 redo={this.redo}
                 multiple={files.length > 1}
+                sizeLimitExceeded={sizeLimitExceeded}
               />
             )
             : (
               <Camera
                 shooting={shooting}
+                sizeLimitExceeded={sizeLimitExceeded}
                 onFlashModeChange={this.onFlashModeChange}
                 flashMode={flashMode}
                 ratio={this.state.ratio}
@@ -200,14 +225,32 @@ class CameraHandler extends React.Component<Props, State> {
               />
             ) : <NoPermission requestPermission={this.requestPermission} />
           }
-        {currentQueueIndex !== null && !!queues && !!queues.length && (
-          <QueuePicker
-            queues={queues}
-            currentQueueIndex={currentQueueIndex}
-            onQueuePick={this.props.selectQueue}
-          />
+        {currentQueueIndex !== null
+          && currentQueueIndex !== undefined
+          && !!queues
+          && !!queues.length && (
+            <QueuePicker
+              queues={queues}
+              currentQueueIndex={currentQueueIndex}
+              onQueuePick={this.props.selectQueue}
+            />
         )}
         {shooting && <PhotoLoader />}
+        {sizeLimitExceeded && (
+          <View
+            pointerEvents="none"
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              alignItems: 'center',
+              padding: 10,
+            }}
+          >
+            <Message
+              show
+              text={`You have exceeded the attachments limit size of ${sizeLimitMB} MB. Please, remove one of the photos to be able to send them.`}
+            />
+          </View>
+        )}
       </View>
     );
   }

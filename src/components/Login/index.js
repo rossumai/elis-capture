@@ -13,7 +13,7 @@ import { validateCredentials } from '../../redux/modules/user/actions';
 import Form from './components/Form';
 
 import logo from '../../images/logo2.png';
-import Message from '../Message';
+import MessageContainer from '../Message';
 
 type State = { username: string, password: string, keyboardIsOpen: boolean }
 type Props = { validate: Function }
@@ -53,7 +53,7 @@ class Login extends React.Component<Props, State> {
     const { validate } = this.props;
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <Message />
+        <MessageContainer />
         <View style={{
           flex: keyboardIsOpen ? 0.5 : 2,
           flexDirection: 'column',
