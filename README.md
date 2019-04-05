@@ -7,7 +7,7 @@ Mobile app, that let's you upload your documents to [Elis](https://rossum.ai/dat
 `react`, `react-native`, `expo`, `rxjs`, `redux`, `redux-observables`, `react-router-native`, `react-native-elements`, `flow`
 
 ## Commands
-`yarn start` - Runs the packager
-`yarn test` - Runs tests
-`yarn eslint` - Checks code linting
-`yarn flow` - Checks validity of types
+* `yarn start` - Runs the packager
+* `yarn test` - Runs tests
+* `yarn eslint` - Checks code linting
+* `yarn flow` - Checks validity of types
