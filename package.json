@@ -28,7 +28,10 @@
     "flow": "flow"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-native|react-router-native)/"
+    ]
   },
   "dependencies": {
     "expo": "^27.0.1",

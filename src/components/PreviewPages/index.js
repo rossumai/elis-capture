@@ -24,6 +24,7 @@ const PreviewPages = ({
     index={pages.length - 1}
     onIndexChanged={index => index === pages.length && addPages()}
     renderPagination={createPagiantion(addPages)}
+    key={pages.length}
   >
     {[...pages, { uri: null }].map(({ uri }, index) => uri ? (
       <ImageBackground
