@@ -7,12 +7,14 @@ type Props = {
   multiple: boolean,
   removeAll: Function,
   send: Function,
+  sizeLimitExceeded: boolean,
 }
 
 const PreviewFooter = ({
   removeAll,
   multiple,
   send,
+  sizeLimitExceeded,
 }: Props) => (
   <View style={{
     flexDirection: 'row',
@@ -34,12 +36,14 @@ const PreviewFooter = ({
     />
     <Button
       onPress={send}
+      disabled={sizeLimitExceeded}
       borderRadius={10}
       backgroundColor="#2f72ff"
       icon={{ name: 'send', size: 20 }}
       title="Send"
       fontSize={18}
       buttonStyle={{ height: 42 }}
+      disabledStyle={{ opacity: 0.5, backgroundColor: '#2f72ff' }}
     />
   </View>
 );

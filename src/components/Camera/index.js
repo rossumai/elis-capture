@@ -17,6 +17,7 @@ type Props = {
   shoot: Function,
   openPreview: Function,
   send: Function,
+  sizeLimitExceeded: boolean,
 }
 
 const styles = StyleSheet.create({
@@ -39,6 +40,7 @@ const Camera = ({
   send,
   shooting,
   openPreview,
+  sizeLimitExceeded,
 }: Props) => (
   <View style={{
     flex: 1,
@@ -59,6 +61,7 @@ const Camera = ({
       autoFocus={RNCamera.Constants.AutoFocus.on}
     />
     <CameraFooter
+      sizeLimitExceeded={sizeLimitExceeded}
       openPreview={openPreview}
       lastFile={lastFile}
       shooting={shooting}
