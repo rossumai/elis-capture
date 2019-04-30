@@ -77,24 +77,11 @@ class CameraHandler extends React.Component<Props, State> {
 
   getRatio = async () => {
     if (Platform.OS === 'android' && this.camera) {
-      const { width, height } = Dimensions.get('window');
       // $FlowFixMe
       const ratios = await this.camera.getSupportedRatiosAsync();
-      const wantedRatio = height / width;
-      let bestRatio = 0;
-      let bestRatioError = 100000;
-      ratios.forEach((ratio) => {
-        const [x, y] = ratio.split(':');
-        if (Math.abs(wantedRatio - x / y) < bestRatioError) {
-          bestRatioError = Math.abs(wantedRatio - x / y);
-          bestRatio = ratio;
-        }
-      });
-      this.setState({
-        ratio: (typeof bestRatio === 'number')
-          ? '16:9'
-          : bestRatio,
-      });
+      const desiredRatio = '16:9'
+      const ratio = ratios.find((ratio) => ratio === desiredRatio) || ratios[ratios.length - 1];
+      this.setState({ ratio });
     }
   }
 
