@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import {
   StyleSheet,
   View,
+  StatusBar
 } from 'react-native';
 import CameraHandler from './src/components/CameraHandler';
 import Login from './src/components/Login';
@@ -22,6 +23,7 @@ const App = () => (
   <Provider store={store}>
     <NativeRouter>
       <View style={styles.container}>
+        <StatusBar hidden={true} />
         <Routing />
         <Route exact path="/" component={Splash} />
         <Route exact path="/login" component={Login} />
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    marginTop: 20,
   },
 });
 

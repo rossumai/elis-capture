@@ -29,7 +29,7 @@ const PreviewPages = ({
     {[...pages, { uri: null }].map(({ uri }, index) => uri ? (
       <ImageBackground
         key={uri}
-        imageStyle={{ resizeMode: 'contain' }}
+        imageStyle={{ resizeMode: 'cover' }}
         style={{ flex: 1 }}
         source={{ uri }}
       >
