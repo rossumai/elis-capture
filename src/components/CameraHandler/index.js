@@ -1,6 +1,6 @@
 /* @flow */
 import React from 'react';
-import { Permissions, FileSystem, ImageManipulator } from 'expo';
+import { Permissions, FileSystem, ImageManipulator, Constants } from 'expo';
 import {
   View,
   AsyncStorage,
@@ -23,6 +23,7 @@ import { FLASHMODE } from '../../constants/config';
 import MessageContainer, { Message } from '../Message';
 
 export type FlashMode = 'auto' | 'on' | 'off';
+const { width, height } = Dimensions.get('window');
 
 type Props = {
   queues: Array<Queue>,
@@ -58,7 +59,7 @@ class CameraHandler extends React.Component<Props, State> {
       permissionsGranted: true,
       files: [],
       flashMode: 'auto',
-      ratio: '4:3',
+      ratio: '16:9',
       showPreview: false,
       redoing: null,
       shooting: false,
@@ -84,16 +85,16 @@ class CameraHandler extends React.Component<Props, State> {
 
   getRatio = async () => {
     if (Platform.OS === 'android' && this.camera) {
-      const { width, height } = Dimensions.get('window');
       // $FlowFixMe
       const ratios = await this.camera.getSupportedRatiosAsync();
-      const wantedRatio = height / width;
+      const maxRatio = height / width;
       let bestRatio = 0;
       let bestRatioError = 100000;
       ratios.forEach((ratio) => {
+        if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') { return }
         const [x, y] = ratio.split(':');
-        if (Math.abs(wantedRatio - x / y) < bestRatioError) {
-          bestRatioError = Math.abs(wantedRatio - x / y);
+        if (x / y < height / width && Math.abs(maxRatio - x / y) < bestRatioError) {
+          bestRatioError = Math.abs(maxRatio - x / y);
           bestRatio = ratio;
         }
       });
@@ -205,6 +206,7 @@ class CameraHandler extends React.Component<Props, State> {
                 addPages={this.addPages}
                 redo={this.redo}
                 multiple={files.length > 1}
+                ratio={this.state.ratio}
                 sizeLimitExceeded={sizeLimitExceeded}
               />
             )
