@@ -1,10 +1,11 @@
 /* @flow */
 import React from 'react';
 import { Camera as RNCamera } from 'expo';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import CameraFooter from '../CameraFooter';
 import type { FlashMode } from '../CameraHandler';
-const { width, height } = Dimensions.get('window');
+
+const { height } = Dimensions.get('window');
 
 type Props = {
   flashMode: FlashMode,
@@ -23,8 +24,8 @@ type Props = {
 
 const getRatioFraction = (ratio) => {
   const [x, y] = ratio.split(':');
-  return x/y
-}
+  return x / y;
+};
 
 const Camera = ({
   getRef,
@@ -49,8 +50,8 @@ const Camera = ({
   >
     <RNCamera
       style={{
-        height: height,
-        width: height / getRatioFraction(ratio)
+        height,
+        width: height / getRatioFraction(ratio),
       }}
       type={RNCamera.Constants.Type.back}
       flashMode={RNCamera.Constants.FlashMode[flashMode]}

@@ -1,6 +1,8 @@
 /* @flow */
 import React from 'react';
-import { Permissions, FileSystem, ImageManipulator, Constants } from 'expo';
+import {
+  Permissions, FileSystem, ImageManipulator, Constants,
+} from 'expo';
 import {
   View,
   AsyncStorage,
@@ -91,7 +93,7 @@ class CameraHandler extends React.Component<Props, State> {
       let bestRatio = 0;
       let bestRatioError = 100000;
       ratios.forEach((ratio) => {
-        if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') { return }
+        if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') { return; }
         const [x, y] = ratio.split(':');
         if (x / y < height / width && Math.abs(maxRatio - x / y) < bestRatioError) {
           bestRatioError = Math.abs(maxRatio - x / y);
