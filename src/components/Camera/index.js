@@ -1,9 +1,11 @@
 /* @flow */
 import React from 'react';
 import { Camera as RNCamera } from 'expo';
-import { View, StyleSheet } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import CameraFooter from '../CameraFooter';
 import type { FlashMode } from '../CameraHandler';
+
+const { height } = Dimensions.get('window');
 
 type Props = {
   flashMode: FlashMode,
@@ -20,13 +22,10 @@ type Props = {
   sizeLimitExceeded: boolean,
 }
 
-const styles = StyleSheet.create({
-  camera: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-});
+const getRatioFraction = (ratio) => {
+  const [x, y] = ratio.split(':').map(Number);
+  return x / y;
+};
 
 const Camera = ({
   getRef,
@@ -50,7 +49,10 @@ const Camera = ({
   }}
   >
     <RNCamera
-      style={styles.camera}
+      style={{
+        height,
+        width: height / getRatioFraction(ratio),
+      }}
       type={RNCamera.Constants.Type.back}
       flashMode={RNCamera.Constants.FlashMode[flashMode]}
       permissionDialogMessage="We need your access your camera, so you can take photos of your documents"
