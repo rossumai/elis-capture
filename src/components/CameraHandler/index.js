@@ -196,7 +196,6 @@ class CameraHandler extends React.Component<Props, State> {
     return (
       <View style={{ position: 'relative', width: '100%', height: '100%' }}>
         <MessageContainer />
-        {uploading && <UploadIndicator />}
         {permissionsGranted
           ? showPreview
             ? (
@@ -229,6 +228,7 @@ class CameraHandler extends React.Component<Props, State> {
               />
             ) : <NoPermission requestPermission={this.requestPermission} />
           }
+        {uploading && <UploadIndicator />}
         {currentQueueIndex !== null
           && currentQueueIndex !== undefined
           && !!queues
