@@ -1,16 +1,13 @@
 /* @flow */
 import React from 'react';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 import {
-  Permissions, FileSystem, ImageManipulator, Constants,
-} from 'expo';
-import {
-  View,
-  AsyncStorage,
-  Platform,
-  Dimensions,
-  StyleSheet,
+  AsyncStorage, Dimensions, Platform, StyleSheet, View,
 } from 'react-native';
-import { set, last } from 'lodash';
+import { last, set } from 'lodash';
 import { connect } from 'react-redux';
 import PhotoLoader from '../PhotoLoader';
 import Preview from '../Preview';
@@ -23,8 +20,8 @@ import UploadIndicator from '../UploadIndicator';
 import type { Queue } from '../../redux/modules/queues/reducer';
 import { FLASHMODE } from '../../constants/config';
 import MessageContainer, { Message } from '../Message';
+import type { FlashMode } from '../../constants/types';
 
-export type FlashMode = 'auto' | 'on' | 'off';
 const { width, height } = Dimensions.get('window');
 
 type Props = {
@@ -116,7 +113,7 @@ class CameraHandler extends React.Component<Props, State> {
       const photo = await this.camera.takePictureAsync({ quality: 0.5 });
 
       const resizedPhoto = await ImageManipulator
-        .manipulate(photo.uri, [{ resize: { width: 1240 } }], { compress: 0.5 });
+        .manipulateAsync(photo.uri, [{ resize: { width: 1240 } }], { compress: 0.5 });
 
       const resizedInfo = await FileSystem.getInfoAsync(resizedPhoto.uri);
 

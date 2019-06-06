@@ -4,7 +4,7 @@ import {
   Route,
 } from 'react-router-native';
 import React from 'react';
-import { ScreenOrientation } from 'expo';
+// import { ScreenOrientation } from 'expo';
 import { Provider } from 'react-redux';
 import {
   StyleSheet,
@@ -17,7 +17,7 @@ import store from './src/redux/configureStore';
 import Routing from './src/decorators/routing';
 import Splash from './src/components/Splash';
 
-ScreenOrientation.allow(ScreenOrientation.Orientation.PORTRAIT);
+// ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT);
 
 const App = () => (
   <Provider store={store}>

@@ -1,9 +1,9 @@
 /* @flow */
 import React from 'react';
-import { Camera as RNCamera } from 'expo';
+import { Camera as RNCamera } from 'expo-camera';
 import { View, Dimensions } from 'react-native';
 import CameraFooter from '../CameraFooter';
-import type { FlashMode } from '../CameraHandler';
+import type { FlashMode } from '../../constants/types';
 
 const { height } = Dimensions.get('window');
 

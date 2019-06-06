@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import LeftFooter from './components/LeftFooter';
 import CenterFooter from './components/CenterFooter';
 import RightFooter from './components/RightFooter';
-import type { FlashMode } from '../CameraHandler';
+import type { FlashMode } from '../../constants/types';
 
 type Props = {
   lastFile: ?Object,
