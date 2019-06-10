@@ -2,7 +2,7 @@
 import { View, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Icon } from 'react-native-elements';
-import type { FlashMode } from '../../CameraHandler';
+import type { FlashMode } from '../../../constants/types';
 
 const flashModes = {
   on: 'flash',
