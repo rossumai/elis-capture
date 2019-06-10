@@ -5,7 +5,7 @@
     "name": "Elis Capture",
     "slug": "elis-capture",
     "description": "Simple app, that let's you send documents to Elis with ease.",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "orientation": "portrait",
     "primaryColor": "#2F72FF",
     "icon": "./src/images/android/playstore-icon.png",
@@ -20,7 +20,7 @@
     },
     "ios": {
       "bundleIdentifier": "ai.rossum.elis.capture",
-      "buildNumber": "0.1.0",
+      "buildNumber": "0.2.1",
       "icon": "./src/images/android/playstore-icon.png",
       "supportsTablet": false,
       "isTabletOnly": false
