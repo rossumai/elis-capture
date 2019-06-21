@@ -36,7 +36,7 @@
       "permissions": [
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE",
-        "READ_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
       ],
       "splash": {
         "ldpi": "./src/images/android/mipmap-ldpi/ic_launcher.png",
