@@ -10,9 +10,12 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "tslint -c tslint.json --project .",
+    "lint:fix": "tslint -c tslint.json --project . --fix",
+    "purge-cache": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.7.1",
     "@types/redux-logger": "^3.0.7",
     "expo-camera": "^8.0.0",
     "expo-image-manipulator": "^8.0.0",
@@ -29,6 +32,7 @@
     "react-native-svg": "^8.0.8",
     "react-native-swiper": "^1.5.14",
     "react-native-unimodules": "^0.7.0",
+    "react-native-vector-icons": "^6.6.0",
     "react-redux": "^5.1.1",
     "react-router-native": "^4.3.0",
     "redux": "^4.0.1",
@@ -50,14 +54,15 @@
     "@types/react-router-native": "^5.1.0",
     "@types/react-test-renderer": "16.9.1",
     "@types/seamless-immutable": "^7.1.11",
-    "@typescript-eslint/eslint-plugin": "^2.12.0",
-    "@typescript-eslint/parser": "^2.12.0",
     "babel-jest": "^24.9.0",
     "eslint": "^6.5.1",
     "jest": "^24.9.0",
     "jetifier": "^1.6.3",
     "metro-react-native-babel-preset": "^0.56.0",
     "react-test-renderer": "16.9.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-react": "^4.0.0",
     "typescript": "^3.7.3"
   },
   "jest": {

@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { Action } from 'redux';
 import { combineEpics, ofType } from 'redux-observable';
 import { from, Observable } from 'rxjs';
@@ -33,7 +33,10 @@ const fetchQueuesEpic = (action$: Observable<Action>) =>
   action$.pipe(
     ofType(FETCH_QUEUES),
     mergeMap(() =>
-      authGetJSON(`${apiUrl}/queues?pageSize=15&page=1`, {}).pipe(map(fetchQueuesFulfilled), catchError(errorHandler)),
+      authGetJSON(`${apiUrl}/queues?pageSize=15&page=1`, {}).pipe(
+        map(fetchQueuesFulfilled),
+        catchError(errorHandler),
+      ),
     ),
   );
 

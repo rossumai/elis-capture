@@ -1,17 +1,17 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-react-hooks", "tslint-config-prettier"],
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
   "rules": {
     "interface-name": [false],
     "interface-over-type-literal": false,
     "jsx-no-lambda": false,
     "member-access": false,
     "object-literal-sort-keys": false,
-    "react-hooks-nesting": {
-      "severity": "error",
-      "options": {
-        "detect-hooks-from-non-react-namespace": true
-      }
-    },
+    // "react-hooks-nesting": {
+    //   "severity": "error",
+    //   "options": {
+    //     "detect-hooks-from-non-react-namespace": true
+    //   }
+    // },
     "no-any": {
       "severity": "error"
     },

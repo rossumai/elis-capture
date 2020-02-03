@@ -26,7 +26,7 @@ const Form = ({ onUsernameChange, onPasswordChange, username, password, onSubmit
       placeholderTextColor="#979797"
       style={styles.Input}
       underlineColorAndroid="rgba(0,0,0,0)"
-      secureTextEntry
+      secureTextEntry={true}
     />
     <TouchableOpacity onPress={onSubmit} style={styles.Button}>
       <View>

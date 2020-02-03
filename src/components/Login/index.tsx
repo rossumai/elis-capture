@@ -3,9 +3,9 @@ import { Image, Keyboard, KeyboardAvoidingView, StyleSheet, Text, View } from 'r
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { validateCredentials } from '../../common/modules/user/actions';
-import MessageContainer from '../Message';
 import Form from './components/Form';
 
+// tslint:disable-next-line:no-var-requires
 const logo = require('../../images/logo2.png');
 
 type validateCredentialsT = {
@@ -48,23 +48,21 @@ class Login extends React.Component<Props, State> {
     const { validate } = this.props;
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <MessageContainer />
+        {/* <MessageContainer /> */}
         <View
           style={{
             flex: keyboardIsOpen ? 0.5 : 2,
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-end',
-          }}
-        >
+          }}>
           {keyboardIsOpen || <Image source={logo} style={{ width: 70, height: 70 }} />}
           <View
             style={{
               flexDirection: 'column',
               alignItems: 'center',
               marginTop: 10,
-            }}
-          >
+            }}>
             <View style={{ flexDirection: 'row' }}>
               <Text
                 style={{
@@ -72,8 +70,7 @@ class Login extends React.Component<Props, State> {
                   fontSize: 20,
                   letterSpacing: 1,
                   fontWeight: 'bold',
-                }}
-              >
+                }}>
                 ELIS
               </Text>
               <Text>{'   '}</Text>
@@ -82,8 +79,7 @@ class Login extends React.Component<Props, State> {
                   color: 'white',
                   fontSize: 20,
                   letterSpacing: 1,
-                }}
-              >
+                }}>
                 CAPTURE
               </Text>
             </View>

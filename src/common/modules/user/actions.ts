@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { combineEpics, ofType } from 'redux-observable';
 import { from, of as _of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -73,4 +73,9 @@ const logoutUserEpic = action$ =>
     map(() => changeRoute('/login')),
   );
 
-export default combineEpics(checkTokenEpic, validateCredentialsEpic, loginUserFulfilledEpic, logoutUserEpic);
+export default combineEpics(
+  checkTokenEpic,
+  validateCredentialsEpic,
+  loginUserFulfilledEpic,
+  logoutUserEpic,
+);

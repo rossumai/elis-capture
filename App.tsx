@@ -12,10 +12,10 @@ const App = () => (
   <Provider store={store}>
     <NativeRouter>
       <View style={styles.container}>
-        <StatusBar hidden />
+        <StatusBar hidden={true} />
         <Routing />
-        <Route exact path="/" component={Splash} />
-        <Route exact path="/login" component={Login} />
+        <Route exact={true} path="/" component={Splash} />
+        <Route exact={true} path="/login" component={Login} />
         <Route path="/camera" component={CameraHandler} />
       </View>
     </NativeRouter>

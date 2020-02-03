@@ -3,8 +3,8 @@ import { Text, View } from 'react-native';
 
 type Props = {
   value: number;
-  style?: Object;
-  textStyle?: Object;
+  style?: {};
+  textStyle?: {};
 };
 
 const IndexNumber = ({ value, style, textStyle }: Props) => (

@@ -5,11 +5,12 @@ import PreviewFooter from '../PreviewFooter';
 import PreviewPages from '../PreviewPages';
 
 type Props = {
-  files: Array<CapturedPicture>;
+  files: CapturedPicture[];
   multiple: boolean;
-  remove: () => void;
+  remove: (i: number) => void;
   removeAll: () => void;
   send: () => void;
+  ratio: string;
   addPages: () => void;
   redo: () => void;
   sizeLimitExceeded: boolean;

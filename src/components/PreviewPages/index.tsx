@@ -1,3 +1,4 @@
+import { CapturedPicture } from 'expo-camera/build/Camera.types';
 import React from 'react';
 import { ImageBackground, View } from 'react-native';
 import Swiper from 'react-native-swiper';
@@ -6,7 +7,7 @@ import RedoIcon from './components/RedoIcon';
 import RemoveIcon from './components/RemoveIcon';
 
 type Props = {
-  pages: Array<Object>;
+  pages: CapturedPicture[];
   remove: (index: number) => void;
   redo: (index: number) => void;
   addPages: () => void;
@@ -18,11 +19,14 @@ const PreviewPages = ({ pages, remove, redo, addPages }: Props) => (
     index={pages.length - 1}
     onIndexChanged={(index: number) => index === pages.length && addPages()}
     renderPagination={createPagiantion(addPages)}
-    key={pages.length}
-  >
+    key={pages.length}>
     {[...pages, { uri: null }].map(({ uri }, index) =>
       uri ? (
-        <ImageBackground key={uri} imageStyle={{ resizeMode: 'cover' }} style={{ flex: 1 }} source={{ uri }}>
+        <ImageBackground
+          key={uri}
+          imageStyle={{ resizeMode: 'cover' }}
+          style={{ flex: 1 }}
+          source={{ uri }}>
           {pages.length > 1 && (
             <View
               style={{
@@ -30,8 +34,7 @@ const PreviewPages = ({ pages, remove, redo, addPages }: Props) => (
                 flexDirection: 'row',
                 padding: 10,
                 backgroundColor: 'rgba(0, 0, 0, 0.4)',
-              }}
-            >
+              }}>
               <RemoveIcon remove={() => remove(index)} />
               <RedoIcon redo={() => redo(index)} />
             </View>

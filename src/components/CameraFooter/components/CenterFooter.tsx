@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 
+// tslint:disable-next-line:no-var-requires
 const logo = require('../../../images/logo2.png');
 
 type Props = { shoot: () => void; sizeLimitExceeded: boolean };

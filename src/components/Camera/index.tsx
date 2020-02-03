@@ -1,5 +1,5 @@
-import { Camera as RNCamera } from 'expo-camera';
-import React from 'react';
+import { Camera as CameraType, Camera as RNCamera } from 'expo-camera';
+import React, { RefObject } from 'react';
 import { Dimensions, View } from 'react-native';
 import CameraFooter from '../CameraFooter';
 import { FlashMode } from '../CameraHandler';
@@ -7,22 +7,23 @@ import { FlashMode } from '../CameraHandler';
 const { height } = Dimensions.get('window');
 
 export type CapturedPicture = {
+  size?: number;
   width: number;
   height: number;
   uri: string;
   base64?: string;
-  exif?: any;
+  exif?: boolean;
 };
 
 type Props = {
   flashMode: FlashMode;
   pagesCount: number;
   ratio: string;
-  lastFile: null | CapturedPicture;
+  lastFile: undefined | CapturedPicture;
   shooting: boolean;
   onFlashModeChange: () => void;
   onCameraReady: () => void;
-  getRef: () => void;
+  getRef: RefObject<CameraType>;
   shoot: () => void;
   openPreview: () => void;
   send: () => void;
@@ -70,7 +71,7 @@ const Camera = ({
     <CameraFooter
       sizeLimitExceeded={sizeLimitExceeded}
       openPreview={openPreview}
-      lastFile={lastFile}
+      lastFile={lastFile ? lastFile : null}
       shooting={shooting}
       pagesCount={pagesCount}
       shoot={shoot}

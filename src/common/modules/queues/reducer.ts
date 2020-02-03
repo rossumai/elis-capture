@@ -1,20 +1,21 @@
+import { Action } from 'redux';
 import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
 import { FETCH_QUEUES_FULFILLED, SELECT_QUEUE } from './actions';
 
 export type Queue = {
   workspace: string;
-  annotations: Array<string>;
+  annotations: string[];
   id: number;
   name: string;
   rirUrl: string;
   sessionTimeout: number;
   url: string;
-  users: Array<string>;
-  counts: Object;
+  users: string[];
+  counts: {};
 };
 
 type State = ImmutableType<{
-  queues: Array<Queue>;
+  queues: Queue[];
   currentQueueIndex: number | null;
 }>;
 const initialState: State = Immutable({
@@ -22,7 +23,7 @@ const initialState: State = Immutable({
   currentQueueIndex: null,
 });
 
-function reducer(state: State = initialState, action: Object) {
+function reducer(state: State = initialState, action: Action) {
   switch (action.type) {
     case FETCH_QUEUES_FULFILLED: {
       const {
