@@ -1,6 +1,6 @@
-import { Action } from 'redux';
+import { Reducer } from 'redux';
 import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
-import { FETCH_QUEUES_FULFILLED, SELECT_QUEUE } from './actions';
+import { actionT, FETCH_QUEUES_FULFILLED, SELECT_QUEUE } from './actions';
 
 export type Queue = {
   workspace: string;
@@ -14,22 +14,22 @@ export type Queue = {
   counts: {};
 };
 
-type State = ImmutableType<{
+export type queueT = ImmutableType<{
   queues: Queue[];
   currentQueueIndex: number | null;
 }>;
-const initialState: State = Immutable({
+const initialState: queueT = Immutable({
   queues: [],
   currentQueueIndex: null,
 });
 
-function reducer(state: State = initialState, action: Action) {
+const queueReducer: Reducer<queueT, actionT> = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_QUEUES_FULFILLED: {
       const {
-        payload: { results },
+        payload: { queues },
       } = action;
-      return state.set('queues', results);
+      return state.set('queues', queues);
     }
 
     case SELECT_QUEUE:
@@ -39,6 +39,6 @@ function reducer(state: State = initialState, action: Action) {
       return state;
     }
   }
-}
+};
 
-export default reducer;
+export default queueReducer;

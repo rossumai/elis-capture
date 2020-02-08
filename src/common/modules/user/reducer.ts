@@ -1,11 +1,11 @@
-import { Action } from 'redux';
+import { Reducer } from 'redux';
 import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
-import { LOGIN_USER_FULFILLED } from './actions';
+import { actionT, LOGIN_USER_FULFILLED } from './actions';
 
-type State = ImmutableType<{ loggedIn: boolean }>;
-const initialState: State = Immutable({ loggedIn: false });
+export type userT = ImmutableType<{ loggedIn: boolean }>;
+const initialState: userT = Immutable({ loggedIn: false });
 
-function reducer(state: State = initialState, action: Action) {
+const userReducer: Reducer<userT, actionT> = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_USER_FULFILLED: {
       return state.set('loggedIn', true);
@@ -14,6 +14,6 @@ function reducer(state: State = initialState, action: Action) {
       return state;
     }
   }
-}
+};
 
-export default reducer;
+export default userReducer;

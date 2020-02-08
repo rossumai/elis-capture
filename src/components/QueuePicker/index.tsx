@@ -2,10 +2,11 @@ import React, { useRef } from 'react';
 import { View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Dropdown from 'react-native-modal-dropdown';
+import SeamlessImmutable from 'seamless-immutable';
 import { Queue } from '../../common/modules/queues/reducer';
 
 type Props = {
-  queues: Queue[];
+  queues: SeamlessImmutable.ImmutableArray<Queue>;
   onQueuePick: (index: number) => void;
   currentQueueIndex: number;
 };
@@ -33,7 +34,8 @@ class QueuePicker extends React.Component<Props> {
           justifyContent: 'flex-end',
         }}>
         <Dropdown
-          options={queues.map(({ name }) => name)}
+          // @ts-ignore
+          options={queues.map(({ name }) => name)} // Dropdown will require re-typing cause it cannot handle immutable types :/
           defaultIndex={currentQueueIndex}
           defaultValue={queues[currentQueueIndex].name}
           ref={this.dropdown}

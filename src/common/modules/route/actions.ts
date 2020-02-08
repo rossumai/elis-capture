@@ -1,8 +1,18 @@
 export const CHANGE_ROUTE = 'CHANGE_ROUTE';
 
-export type Route = '/camera' | '/' | '/login';
+type actionTypeT = 'CHANGE_ROUTE';
 
-export const changeRoute = (route: Route) => ({
+type ack<typeT extends actionTypeT, payloadT> = {
+  type: typeT;
+  payload: payloadT;
+};
+
+export type actionT = ack<'CHANGE_ROUTE', { route: routeT }>;
+
+export type routeT = '/camera' | '/' | '/login';
+
+type changeRouteT = (route: routeT) => actionT;
+export const changeRoute: changeRouteT = (route: routeT) => ({
   type: CHANGE_ROUTE,
-  payload: route,
+  payload: { route },
 });

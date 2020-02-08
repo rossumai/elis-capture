@@ -2,7 +2,9 @@ import React from 'react';
 import { Image, Keyboard, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { validateCredentials } from '../../common/modules/user/actions';
+import { rootActionT } from '../../common/configureStore';
+import { CredentialsBody, validateCredentials } from '../../common/modules/user/actions';
+import MessageContainer from '../Message';
 import Form from './components/Form';
 
 // tslint:disable-next-line:no-var-requires
@@ -14,7 +16,7 @@ type validateCredentialsT = {
 };
 
 type State = { username: string; password: string; keyboardIsOpen: boolean };
-type Props = { validate: (credentials: validateCredentialsT) => Promise<void> };
+type Props = { validate: (credentials: validateCredentialsT) => rootActionT };
 
 class Login extends React.Component<Props, State> {
   keyboardDidShowListener = {};
@@ -48,7 +50,7 @@ class Login extends React.Component<Props, State> {
     const { validate } = this.props;
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        {/* <MessageContainer /> */}
+        <MessageContainer />
         <View
           style={{
             flex: keyboardIsOpen ? 0.5 : 2,
@@ -108,8 +110,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  validate: (...args) => dispatch(validateCredentials(...args)),
+const mapDispatchToProps = (dispatch: Dispatch<rootActionT>) => ({
+  validate: (body: CredentialsBody) => dispatch(validateCredentials(body)),
 });
 
 export default connect(null, mapDispatchToProps)(Login);

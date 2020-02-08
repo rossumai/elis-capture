@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
-import { Message as Props, State } from '../../common/modules/messages/reducer';
+import { reduxStateT } from '../../common/configureStore';
+import { Message as Props } from '../../common/modules/messages/reducer';
 
 export const Message = ({ show, text }: Props) =>
   show ? (
@@ -27,6 +28,6 @@ export const Message = ({ show, text }: Props) =>
     </View>
   ) : null;
 
-const mapStateToProps = (state: State) => state.messages;
+const mapStateToProps = (state: reduxStateT) => state.messages;
 
 export default connect(mapStateToProps)(Message);

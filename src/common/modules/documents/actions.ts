@@ -1,27 +1,40 @@
-import { Action } from 'redux';
-import { combineEpics, ofType } from 'redux-observable';
-import { Observable } from 'rxjs';
+import { ActionsObservable, ofType } from 'redux-observable';
 import { catchError, map, mergeMap, pluck } from 'rxjs/operators';
 import { authPost, errorHandler } from '../../../lib/api';
+import { queueT } from '../queues/reducer';
 import { CapturedPicture } from './../../../components/Camera/index';
-import { State } from './reducer';
 
 export const UPLOAD_DOCUMENTS = 'UPLOAD_DOCUMENTS';
 export const UPLOAD_DOCUMENTS_FULFILLED = 'UPLOAD_DOCUMENTS_FULFILLED';
 
-export const uploadDocuments = (files: CapturedPicture[]) => ({
+type actionTypeT = 'UPLOAD_DOCUMENTS' | 'UPLOAD_DOCUMENTS_FULFILLED';
+
+type ack<typeT extends actionTypeT, payloadT> = {
+  type: typeT;
+  payload: payloadT;
+};
+
+export type actionT =
+  | ack<'UPLOAD_DOCUMENTS', { files: CapturedPicture[] }>
+  | ack<'UPLOAD_DOCUMENTS_FULFILLED', {}>;
+
+type uploadDocumentsT = (files: CapturedPicture[]) => actionT;
+export const uploadDocuments: uploadDocumentsT = (files: CapturedPicture[]) => ({
   type: UPLOAD_DOCUMENTS,
   payload: { files },
 });
 
-export const uploadDocumentsFulffilled = () => ({
+type uploadDocumentsFulffilledT = () => actionT;
+export const uploadDocumentsFulffilled: uploadDocumentsFulffilledT = () => ({
   type: UPLOAD_DOCUMENTS_FULFILLED,
+  payload: {},
 });
 
-const uploadDocumentsEpic = (action$: Observable<Action>, state: State) =>
+const uploadDocumentsEpic = (action$: ActionsObservable<actionT>, state: queueT) =>
   action$.pipe(
     ofType(UPLOAD_DOCUMENTS),
-    pluck('payload', 'files'),
+    // @ts-ignore
+    pluck('payload', 'files'), // the type inference for pluck seems to be not working, TODO possibly introduce custom pluck which infers the types
     map((files: CapturedPicture[]) =>
       files.map(file => ({
         uri: file.uri,
@@ -30,10 +43,9 @@ const uploadDocumentsEpic = (action$: Observable<Action>, state: State) =>
       })),
     ),
     map((files: CapturedPicture[]) => {
-      const {
-        queues: { currentQueueIndex, queues },
-      } = state.value;
-      const { url } = queues[currentQueueIndex];
+      const { currentQueueIndex, queues } = state;
+      // @ts-ignore
+      const { url } = currentQueueIndex && queues[currentQueueIndex]; // need to be revised since there is a type mismatch
 
       const data = new FormData();
       files.forEach((file: CapturedPicture) => data.append('content', file));
@@ -47,4 +59,4 @@ const uploadDocumentsEpic = (action$: Observable<Action>, state: State) =>
     ),
   );
 
-export default combineEpics(uploadDocumentsEpic);
+export default uploadDocumentsEpic;

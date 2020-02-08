@@ -1,16 +1,16 @@
-import { Action } from 'redux';
+import { Reducer } from 'redux';
 import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
-import { DISPLAY_MESSAGE, DISPLAY_MESSAGE_FULFILLED } from './actions';
+import { actionT, DISPLAY_MESSAGE, DISPLAY_MESSAGE_FULFILLED } from './actions';
 
 export type Message = { show: boolean; text: string };
-export type State = ImmutableType<Message>;
+export type messageT = ImmutableType<Message>;
 
-const initialState: State = Immutable({ show: false, text: '' });
+const initialState: messageT = Immutable({ show: false, text: '' });
 
-function reducer(state: State = initialState, action: Action) {
+const messagesReducer: Reducer<messageT, actionT> = (state = initialState, action) => {
   switch (action.type) {
     case DISPLAY_MESSAGE:
-      return state.set('text', action.payload).set('show', true);
+      return state.set('text', action.payload.message).set('show', true);
 
     case DISPLAY_MESSAGE_FULFILLED:
       return initialState;
@@ -18,6 +18,6 @@ function reducer(state: State = initialState, action: Action) {
     default:
       return state;
   }
-}
+};
 
-export default reducer;
+export default messagesReducer;

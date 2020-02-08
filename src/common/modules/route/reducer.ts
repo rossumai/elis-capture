@@ -1,6 +1,9 @@
-import { Action } from 'redux';
-import { CHANGE_ROUTE } from './actions';
+import { Reducer } from 'redux';
+import { actionT, CHANGE_ROUTE, routeT } from './actions';
 
-const reducer = (state: string = '/', action: Action) => (action.type === CHANGE_ROUTE ? action.payload : state);
+const initialState = '/';
 
-export default reducer;
+const routeReducer: Reducer<routeT, actionT> = (state = initialState, action) =>
+  action.type === CHANGE_ROUTE ? action.payload.route : state;
+
+export default routeReducer;

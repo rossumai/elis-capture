@@ -1,14 +1,14 @@
-import { Action } from 'redux';
+import { Reducer } from 'redux';
 import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
-import { UPLOAD_DOCUMENTS, UPLOAD_DOCUMENTS_FULFILLED } from './actions';
+import { actionT, UPLOAD_DOCUMENTS, UPLOAD_DOCUMENTS_FULFILLED } from './actions';
 
-export type State = ImmutableType<{
+export type documentsT = ImmutableType<{
   uploading: boolean;
 }>;
 
-const initialState: State = Immutable({ uploading: false });
+const initialState: documentsT = Immutable({ uploading: false });
 
-function reducer(state: State = initialState, action: Action) {
+const documentsReducer: Reducer<documentsT, actionT> = (state = initialState, action) => {
   switch (action.type) {
     case UPLOAD_DOCUMENTS:
       return state.set('uploading', true);
@@ -18,6 +18,6 @@ function reducer(state: State = initialState, action: Action) {
     default:
       return state;
   }
-}
+};
 
-export default reducer;
+export default documentsReducer;

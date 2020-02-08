@@ -6,10 +6,16 @@ import React, { useRef } from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { Constants, FileSystem, Permissions } from 'react-native-unimodules';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import SeamlessImmutable from 'seamless-immutable';
+import { reduxStateT, rootActionT } from '../../common/configureStore';
+import { uploadDocuments } from '../../common/modules/documents/actions';
+import { fetchQueues, selectQueue } from '../../common/modules/queues/actions';
 import { Queue } from '../../common/modules/queues/reducer';
 import { FLASHMODE } from '../../constants/config';
+import { isFlashmodeType } from '../../types/typeGuardFlashmode';
 import Camera, { CapturedPicture } from '../Camera';
-import { Message } from '../Message';
+import MessageContainer, { Message } from '../Message';
 import NoPermission from '../NoPremission';
 import PhotoLoader from '../PhotoLoader';
 import Preview from '../Preview';
@@ -21,12 +27,12 @@ export type FlashMode = 'auto' | 'on' | 'off';
 const { width, height } = Dimensions.get('window');
 
 type Props = {
-  queues: Queue[];
-  currentQueueIndex?: number;
-  selectQueue: () => void;
-  send: (file: CapturedPicture[]) => void;
+  queues: SeamlessImmutable.ImmutableArray<Queue>;
+  currentQueueIndex: number | null;
+  selectQueue: (index: number) => rootActionT;
+  send: (file: CapturedPicture[]) => rootActionT;
   uploading: boolean;
-  fetchQueues: () => void;
+  fetchQueues: () => rootActionT;
 };
 type State = {
   permissionsGranted: boolean;
@@ -69,7 +75,8 @@ class CameraHandler extends React.Component<Props, State> {
   }
 
   loadFlashmodeSettings = async () => {
-    const flashMode = (await AsyncStorage.getItem(FLASHMODE)) || 'auto';
+    const asyncStorageFlashMode = await AsyncStorage.getItem(FLASHMODE);
+    const flashMode = isFlashmodeType(asyncStorageFlashMode);
     this.setState({ flashMode });
   };
 
@@ -80,10 +87,9 @@ class CameraHandler extends React.Component<Props, State> {
 
   getRatio = async () => {
     if (Platform.OS === 'android' && this.camera.current) {
-      // $FlowFixMe
       const ratios = await this.camera.current.getSupportedRatiosAsync();
       const maxRatio = height / width;
-      let bestRatio = 0;
+      let bestRatio = '0';
       let bestRatioError = 100000;
       ratios.forEach((ratio: string) => {
         if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') {
@@ -96,7 +102,7 @@ class CameraHandler extends React.Component<Props, State> {
         }
       });
       this.setState({
-        ratio: typeof bestRatio === 'number' ? '16:9' : bestRatio,
+        ratio: bestRatio === '0' ? '16:9' : bestRatio,
       });
     }
   };
@@ -105,7 +111,6 @@ class CameraHandler extends React.Component<Props, State> {
     if (this.camera.current) {
       this.setState({ shooting: true });
       const { files, redoing } = this.state;
-      // $FlowFixMe
       const photo = await this.camera.current.takePictureAsync({ quality: 0.5 });
 
       const resizedPhoto = await ImageManipulator.manipulateAsync(
@@ -197,6 +202,7 @@ class CameraHandler extends React.Component<Props, State> {
     const { queues, currentQueueIndex, uploading } = this.props;
     return (
       <View style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <MessageContainer />
         {permissionsGranted ? (
           showPreview ? (
             <Preview
@@ -260,14 +266,13 @@ class CameraHandler extends React.Component<Props, State> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  // TODO my root actions ,todo todo
-  send: (...args) => dispatch(uploadDocuments(...args)),
-  selectQueue: (...args) => dispatch(selectQueue(...args)),
-  fetchQueues: (...args) => dispatch(fetchQueues(...args)),
+const mapDispatchToProps = (dispatch: Dispatch<rootActionT>) => ({
+  send: (files: CapturedPicture[]) => dispatch(uploadDocuments(files)),
+  selectQueue: (index: number) => dispatch(selectQueue(index)),
+  fetchQueues: () => dispatch(fetchQueues()),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: reduxStateT) => ({
   queues: state.queues.queues,
   currentQueueIndex: state.queues.currentQueueIndex,
   uploading: state.documents.uploading,

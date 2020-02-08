@@ -2,17 +2,16 @@ import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-native';
-import { Route } from '../../common/modules/route/actions';
-
-const mapStateToProps = (state: Route) => ({ route: state.route });
+import { reduxStateT } from '../../common/configureStore';
+import { routeT } from '../../common/modules/route/actions';
 
 type Props = {
-  history: { push: () => void };
-  route: Route;
+  history: { push: (path: string) => void };
+  route: routeT;
 };
 
 class Routing extends React.Component<Props> {
-  componentWillReceiveProps({ route, history }) {
+  componentWillReceiveProps({ route, history }: Props) {
     const { route: previousRoute } = this.props;
     if (previousRoute !== route) {
       history.push(route);
@@ -23,5 +22,7 @@ class Routing extends React.Component<Props> {
     return <View />;
   }
 }
+
+const mapStateToProps = (state: reduxStateT) => ({ route: state.route });
 
 export default withRouter(connect(mapStateToProps)(Routing));
