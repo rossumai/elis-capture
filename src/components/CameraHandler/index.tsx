@@ -1,9 +1,8 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import { Camera as CameraType } from 'expo-camera';
-import ImageManipulator from 'expo-image-manipulator';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { last, set } from 'lodash';
-import React, { useRef } from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import React, { createRef } from 'react';
+import { AsyncStorage, Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { Constants, FileSystem, Permissions } from 'react-native-unimodules';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -52,7 +51,7 @@ const sizeLimit = 15 * 1024 * 1024;
 const flashModes: FlashMode[] = ['on', 'off', 'auto'];
 
 class CameraHandler extends React.Component<Props, State> {
-  camera = useRef<CameraType>(null);
+  private cameraRef = createRef<CameraType>();
 
   constructor(props: Props) {
     super(props);
@@ -86,10 +85,10 @@ class CameraHandler extends React.Component<Props, State> {
   };
 
   getRatio = async () => {
-    if (Platform.OS === 'android' && this.camera.current) {
-      const ratios = await this.camera.current.getSupportedRatiosAsync();
+    if (Platform.OS === 'android' && this.cameraRef.current) {
+      const ratios = await this.cameraRef.current.getSupportedRatiosAsync();
       const maxRatio = height / width;
-      let bestRatio = '0';
+      let bestRatio = 0;
       let bestRatioError = 100000;
       ratios.forEach((ratio: string) => {
         if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') {
@@ -98,20 +97,21 @@ class CameraHandler extends React.Component<Props, State> {
         const [x, y] = ratio.split(':').map(Number);
         if (x / y < height / width && Math.abs(maxRatio - x / y) < bestRatioError) {
           bestRatioError = Math.abs(maxRatio - x / y);
+          // @ts-ignore
           bestRatio = ratio;
         }
       });
       this.setState({
-        ratio: bestRatio === '0' ? '16:9' : bestRatio,
+        ratio: typeof bestRatio === 'number' ? '16:9' : bestRatio,
       });
     }
   };
 
   shoot = async () => {
-    if (this.camera.current) {
+    if (this.cameraRef.current) {
       this.setState({ shooting: true });
       const { files, redoing } = this.state;
-      const photo = await this.camera.current.takePictureAsync({ quality: 0.5 });
+      const photo = await this.cameraRef.current.takePictureAsync({ quality: 0.5 });
 
       const resizedPhoto = await ImageManipulator.manipulateAsync(
         photo.uri,
@@ -224,7 +224,7 @@ class CameraHandler extends React.Component<Props, State> {
               flashMode={flashMode}
               ratio={this.state.ratio}
               onCameraReady={this.getRatio}
-              getRef={this.camera}
+              getRef={this.cameraRef}
               shoot={this.shoot}
               send={this.send}
               pagesCount={files.length}

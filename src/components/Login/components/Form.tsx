@@ -13,6 +13,7 @@ const Form = ({ onUsernameChange, onPasswordChange, username, password, onSubmit
   <View style={styles.FormWrapper}>
     <TextInput
       value={username}
+      autoCapitalize="none"
       placeholder="E-mail"
       onChangeText={onUsernameChange}
       placeholderTextColor="#979797"

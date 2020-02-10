@@ -19,6 +19,7 @@ import {
   checkTokenEpic,
   loginUserFulfilledEpic,
   logoutUserEpic,
+  validateCredentialsEpic,
 } from './modules/user/actions';
 import userReducer, { userT } from './modules/user/reducer';
 
@@ -48,6 +49,7 @@ const reducers = {
 const rootReducer = combineReducers<reduxStateT>(reducers);
 
 const epics = combineEpics(
+  validateCredentialsEpic,
   checkTokenEpic,
   loginUserFulfilledEpic,
   logoutUserEpic,

@@ -43,10 +43,10 @@ const uploadDocumentsEpic = (action$: ActionsObservable<actionT>, state: queueT)
       })),
     ),
     map((files: CapturedPicture[]) => {
-      const { currentQueueIndex, queues } = state;
-      // @ts-ignore
+      const {
+        queues: { currentQueueIndex, queues },
+      } = state;
       const { url } = currentQueueIndex && queues[currentQueueIndex]; // need to be revised since there is a type mismatch
-
       const data = new FormData();
       files.forEach((file: CapturedPicture) => data.append('content', file));
       return [url, data];

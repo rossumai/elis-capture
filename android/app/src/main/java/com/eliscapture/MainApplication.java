@@ -1,6 +1,6 @@
-package ai.rossum.elis.capture;
+package com.eliscapture;
 
-import ai.rossum.elis.capture.generated.BasePackageList;
+import com.eliscapture.generated.BasePackageList;
 import android.app.Application;
 import android.content.Context;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;

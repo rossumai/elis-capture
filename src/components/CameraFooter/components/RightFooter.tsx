@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FlashMode } from '../../CameraHandler';
 
 const flashModes = {
@@ -33,7 +33,7 @@ const RightFooter = ({
       alignItems: 'center',
     }}>
     <TouchableWithoutFeedback onPress={onFlashModeChange}>
-      <Icon color="white" name={flashModes[flashMode]} type="material-community" size={30} />
+      <Icon color="white" name={flashModes[flashMode]} size={30} />
     </TouchableWithoutFeedback>
     {showSend && (
       <TouchableOpacity

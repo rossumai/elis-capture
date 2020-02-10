@@ -1,5 +1,13 @@
 import React from 'react';
-import { Image, Keyboard, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
+import {
+  EmitterSubscription,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { rootActionT } from '../../common/configureStore';
@@ -16,29 +24,32 @@ type validateCredentialsT = {
 };
 
 type State = { username: string; password: string; keyboardIsOpen: boolean };
-type Props = { validate: (credentials: validateCredentialsT) => rootActionT };
+type Props = {
+  validate: (credentials: validateCredentialsT) => rootActionT;
+};
 
 class Login extends React.Component<Props, State> {
-  keyboardDidShowListener = {};
+  keyboardDidShowListener?: EmitterSubscription;
+  keyboardDidHideListener?: EmitterSubscription;
 
-  keyboardDidHideListener = {};
+  state = {
+    username: '',
+    password: '',
+    keyboardIsOpen: false,
+  };
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-      keyboardIsOpen: false,
-    };
-  }
-
-  componentDidMount() {
+  componentWillMount() {
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
   }
 
   componentWillUnmount() {
-    Keyboard.removeAllListeners();
+    if (this.keyboardDidShowListener) {
+      this.keyboardDidShowListener.remove();
+    }
+    if (this.keyboardDidHideListener) {
+      this.keyboardDidHideListener.remove();
+    }
   }
 
   keyboardDidShow = () => this.setState({ keyboardIsOpen: true });

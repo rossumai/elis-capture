@@ -1,12 +1,11 @@
-import AsyncStorage from '@react-native-community/async-storage'; // depracated update to react-native-community
 import { identity, pickBy } from 'lodash';
+import { AsyncStorage } from 'react-native';
 import { from, of as _of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { first, mergeMap } from 'rxjs/operators';
-import { displayMessage } from '../../../elis-capture/src/common/modules/messages/actions';
-import { logoutUser } from '../../../elis-capture/src/common/modules/user/actions';
-import { TOKEN } from '../../../elis-capture/src/constants/config';
-import { CredentialsBody } from './../common/modules/user/actions';
+import { displayMessage } from '../common/modules/messages/actions';
+import { CredentialsBody, logoutUser } from '../common/modules/user/actions';
+import { TOKEN } from '../constants/config';
 
 type HeadersInit = {};
 

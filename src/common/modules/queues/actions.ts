@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import { AsyncStorage } from 'react-native';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { from } from 'rxjs';
 import { catchError, map, mergeMap, pluck } from 'rxjs/operators';
@@ -47,10 +47,12 @@ export const selectQueueFulfilled: selectQueueFulfilledT = () => ({
 });
 
 type fetchQueuesFulfilledT = (queues: Queue[]) => actionT;
-export const fetchQueuesFulfilled: fetchQueuesFulfilledT = (queues: Queue[]) => ({
-  type: FETCH_QUEUES_FULFILLED,
-  payload: { queues },
-});
+export const fetchQueuesFulfilled: fetchQueuesFulfilledT = (queues: Queue[]) => {
+  return {
+    type: FETCH_QUEUES_FULFILLED,
+    payload: { queues },
+  };
+};
 
 export const fetchQueuesEpic = (action$: ActionsObservable<actionT>) =>
   action$.pipe(
@@ -59,7 +61,7 @@ export const fetchQueuesEpic = (action$: ActionsObservable<actionT>) =>
       authGetJSON(`${apiUrl}/queues?pageSize=15&page=1`, {}).pipe(
         // @ts-ignore
         // this type ignore comes from weak type of withToken function
-        map(fetchQueuesFulfilled),
+        map(queues => fetchQueuesFulfilled(queues.results)),
         catchError(errorHandler),
       ),
     ),
@@ -78,6 +80,6 @@ export const selectQueueEpic = (action$: ActionsObservable<actionT>) =>
     ofType(SELECT_QUEUE),
     // @ts-ignore
     pluck('payload', 'index'), // the type inference for pluck seems to be not working, TODO possibly introduce custom pluck which infers the types
-    mergeMap((index: string) => from(AsyncStorage.setItem('QUEUE', index))),
+    mergeMap((index: number) => AsyncStorage.setItem('QUEUE', index.toString())),
     map(selectQueueFulfilled),
   );

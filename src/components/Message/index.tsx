@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { reduxStateT } from '../../common/configureStore';

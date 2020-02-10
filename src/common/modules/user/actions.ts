@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import { AsyncStorage } from 'react-native';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { from, of as _of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';

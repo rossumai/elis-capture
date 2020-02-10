@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { createRef } from 'react';
 import { View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Dropdown from 'react-native-modal-dropdown';
@@ -16,7 +16,7 @@ type ModalDropdownRef = {
 };
 
 class QueuePicker extends React.Component<Props> {
-  dropdown = useRef<Dropdown & ModalDropdownRef>(null);
+  private dropdownRef = createRef<Dropdown & ModalDropdownRef>();
 
   render() {
     const { queues, onQueuePick, currentQueueIndex } = this.props;
@@ -32,13 +32,14 @@ class QueuePicker extends React.Component<Props> {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-end',
+          backgroundColor: 'white',
         }}>
         <Dropdown
           // @ts-ignore
           options={queues.map(({ name }) => name)} // Dropdown will require re-typing cause it cannot handle immutable types :/
           defaultIndex={currentQueueIndex}
           defaultValue={queues[currentQueueIndex].name}
-          ref={this.dropdown}
+          ref={this.dropdownRef}
           onSelect={index => onQueuePick(index)}
           renderSeparator={() => null}
           textStyle={{
@@ -69,7 +70,7 @@ class QueuePicker extends React.Component<Props> {
           name="chevron-down"
           color="white"
           type="entypo"
-          onPress={() => this.dropdown.current && this.dropdown.current.show()}
+          onPress={() => this.dropdownRef.current && this.dropdownRef.current.show()}
         />
       </View>
     );

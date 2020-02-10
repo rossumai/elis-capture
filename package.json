@@ -15,7 +15,6 @@
     "purge-cache": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache"
   },
   "dependencies": {
-    "@react-native-community/async-storage": "^1.7.1",
     "@types/redux-logger": "^3.0.7",
     "expo-camera": "^8.0.0",
     "expo-image-manipulator": "^8.0.0",
@@ -50,6 +49,7 @@
     "@types/lodash": "^4.14.149",
     "@types/react-native": "^0.60.25",
     "@types/react-native-modal-dropdown": "^0.6.1",
+    "@types/react-native-vector-icons": "^6.4.5",
     "@types/react-redux": "^7.1.7",
     "@types/react-router-native": "^5.1.0",
     "@types/react-test-renderer": "16.9.1",
