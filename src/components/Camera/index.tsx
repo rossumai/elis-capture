@@ -1,6 +1,6 @@
-import { Camera as CameraType, Camera as RNCamera } from 'expo-camera';
 import React, { RefObject } from 'react';
 import { Dimensions, View } from 'react-native';
+import { RNCamera } from 'react-native-camera';
 import CameraFooter from '../CameraFooter';
 import { FlashMode } from '../CameraHandler';
 
@@ -23,7 +23,7 @@ type Props = {
   shooting: boolean;
   onFlashModeChange: () => void;
   onCameraReady: () => void;
-  getRef: RefObject<CameraType>;
+  getRef: RefObject<RNCamera>;
   shoot: () => void;
   openPreview: () => void;
   send: () => void;

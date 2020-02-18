@@ -1,9 +1,8 @@
-import { Camera as CameraType } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { last, set } from 'lodash';
 import React, { createRef } from 'react';
-import { AsyncStorage, Dimensions, Platform, StyleSheet, View } from 'react-native';
-import { Constants, FileSystem, Permissions } from 'react-native-unimodules';
+import { AsyncStorage, Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
+import { RNCamera } from 'react-native-camera';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import SeamlessImmutable from 'seamless-immutable';
@@ -51,7 +50,7 @@ const sizeLimit = 15 * 1024 * 1024;
 const flashModes: FlashMode[] = ['on', 'off', 'auto'];
 
 class CameraHandler extends React.Component<Props, State> {
-  private cameraRef = createRef<CameraType>();
+  private cameraRef = createRef<RNCamera>();
 
   constructor(props: Props) {
     super(props);
@@ -69,7 +68,7 @@ class CameraHandler extends React.Component<Props, State> {
 
   componentWillMount() {
     this.loadFlashmodeSettings();
-    this.requestPermission();
+    // this.requestPermission();
     this.props.fetchQueues();
   }
 
@@ -79,10 +78,10 @@ class CameraHandler extends React.Component<Props, State> {
     this.setState({ flashMode });
   };
 
-  requestPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permissionsGranted: status === 'granted' });
-  };
+  // requestPermission = async () => {
+  //   const { status } = await Permissions.askAsync(Permissions.CAMERA);
+  //   this.setState({ permissionsGranted: status === 'granted' });
+  // };
 
   getRatio = async () => {
     if (Platform.OS === 'android' && this.cameraRef.current) {
@@ -91,9 +90,6 @@ class CameraHandler extends React.Component<Props, State> {
       let bestRatio = 0;
       let bestRatioError = 100000;
       ratios.forEach((ratio: string) => {
-        if (Constants.deviceName === 'Redmi 6A' && ratio === '9:5') {
-          return;
-        }
         const [x, y] = ratio.split(':').map(Number);
         if (x / y < height / width && Math.abs(maxRatio - x / y) < bestRatioError) {
           bestRatioError = Math.abs(maxRatio - x / y);
@@ -121,9 +117,15 @@ class CameraHandler extends React.Component<Props, State> {
         },
       );
 
-      const resizedInfo = await FileSystem.getInfoAsync(resizedPhoto.uri);
+      const resizedInfoSize: number | undefined = await Image.getSize(
+        resizedPhoto.uri,
+        (pictureWidth, pictureHeight) => pictureWidth * pictureHeight,
+        () => {
+          console.warn('something went wrong');
+        },
+      );
 
-      const newPhoto = { ...resizedPhoto, size: resizedInfo.size };
+      const newPhoto = { ...resizedPhoto, size: resizedInfoSize };
 
       const newFiles =
         typeof redoing === 'number' ? set(files, redoing, newPhoto) : [...files, newPhoto];

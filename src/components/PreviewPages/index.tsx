@@ -1,7 +1,7 @@
-import { CapturedPicture } from 'expo-camera/build/Camera.types';
 import React from 'react';
 import { ImageBackground, View } from 'react-native';
 import Swiper from 'react-native-swiper';
+import { CapturedPicture } from '../Camera';
 import createPagiantion from './components/Pagination';
 import RedoIcon from './components/RedoIcon';
 import RemoveIcon from './components/RemoveIcon';
