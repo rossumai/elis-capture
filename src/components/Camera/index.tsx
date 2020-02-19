@@ -7,12 +7,13 @@ import { FlashMode } from '../CameraHandler';
 const { height } = Dimensions.get('window');
 
 export type CapturedPicture = {
+  path: string;
+  uri: string;
   size?: number;
+  name?: string;
   width: number;
   height: number;
-  uri: string;
   base64?: string;
-  exif?: boolean;
 };
 
 type Props = {

@@ -1,10 +1,12 @@
-import * as ImageManipulator from 'expo-image-manipulator';
 import { last, set } from 'lodash';
 import React, { createRef } from 'react';
-import { AsyncStorage, Dimensions, Image, Platform, StyleSheet, View } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+import { AsyncStorage, Dimensions, Platform, StyleSheet, View } from 'react-native';
+import { RNCamera, TakePictureResponse } from 'react-native-camera';
+import ImageResizer from 'react-native-image-resizer';
+import { check, PERMISSIONS, request } from 'react-native-permissions';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import RNFetchBlob from 'rn-fetch-blob';
 import SeamlessImmutable from 'seamless-immutable';
 import { reduxStateT, rootActionT } from '../../common/configureStore';
 import { uploadDocuments } from '../../common/modules/documents/actions';
@@ -55,7 +57,7 @@ class CameraHandler extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      permissionsGranted: true,
+      permissionsGranted: false,
       files: [],
       flashMode: 'auto',
       ratio: '16:9',
@@ -68,7 +70,8 @@ class CameraHandler extends React.Component<Props, State> {
 
   componentWillMount() {
     this.loadFlashmodeSettings();
-    // this.requestPermission();
+    this.handlePermissionsCamera();
+    this.handlePermissionPhotoLibrary();
     this.props.fetchQueues();
   }
 
@@ -78,10 +81,35 @@ class CameraHandler extends React.Component<Props, State> {
     this.setState({ flashMode });
   };
 
-  // requestPermission = async () => {
-  //   const { status } = await Permissions.askAsync(Permissions.CAMERA);
-  //   this.setState({ permissionsGranted: status === 'granted' });
-  // };
+  handlePermissionsCamera = async () => {
+    switch (Platform.OS) {
+      case 'ios':
+        const statusCheckCameraIos = await check(PERMISSIONS.IOS.CAMERA);
+        if (statusCheckCameraIos !== 'granted') {
+          const status = await request(PERMISSIONS.IOS.CAMERA);
+          return this.setState({ permissionsGranted: status === 'granted' });
+        }
+        return this.setState({ permissionsGranted: false });
+      case 'android':
+        const statusCheckCameraAndroid = await check(PERMISSIONS.ANDROID.CAMERA);
+        if (statusCheckCameraAndroid !== 'granted') {
+          const status = await request(PERMISSIONS.ANDROID.CAMERA);
+          return this.setState({ permissionsGranted: status === 'granted' });
+        }
+        return this.setState({ permissionsGranted: false });
+    }
+  };
+
+  handlePermissionPhotoLibrary = async () => {
+    if (Platform.OS === 'ios') {
+      const statusCheckPhotoLibraryIos = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      if (statusCheckPhotoLibraryIos !== 'granted') {
+        const status = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        return this.setState({ permissionsGranted: status === 'granted' });
+      }
+      return this.setState({ permissionsGranted: false });
+    }
+  };
 
   getRatio = async () => {
     if (Platform.OS === 'android' && this.cameraRef.current) {
@@ -103,29 +131,21 @@ class CameraHandler extends React.Component<Props, State> {
     }
   };
 
+  resizeImage = async (image: TakePictureResponse) => {
+    const resizedImage = await ImageResizer.createResizedImage(image.uri, 1240, 1240, 'JPEG', 50);
+    const responseBase64 = await RNFetchBlob.fs.readFile(resizedImage.path, 'base64');
+    return { ...resizedImage, base64: responseBase64 };
+  };
+
   shoot = async () => {
     if (this.cameraRef.current) {
       this.setState({ shooting: true });
       const { files, redoing } = this.state;
       const photo = await this.cameraRef.current.takePictureAsync({ quality: 0.5 });
 
-      const resizedPhoto = await ImageManipulator.manipulateAsync(
-        photo.uri,
-        [{ resize: { width: 1240 } }],
-        {
-          compress: 0.5,
-        },
-      );
+      const resizedPhoto = await this.resizeImage(photo);
 
-      const resizedInfoSize: number | undefined = await Image.getSize(
-        resizedPhoto.uri,
-        (pictureWidth, pictureHeight) => pictureWidth * pictureHeight,
-        () => {
-          console.warn('something went wrong');
-        },
-      );
-
-      const newPhoto = { ...resizedPhoto, size: resizedInfoSize };
+      const newPhoto = { ...resizedPhoto, size: resizedPhoto.size };
 
       const newFiles =
         typeof redoing === 'number' ? set(files, redoing, newPhoto) : [...files, newPhoto];
@@ -235,7 +255,7 @@ class CameraHandler extends React.Component<Props, State> {
             />
           )
         ) : (
-          <NoPermission requestPermission={this.requestPermission} />
+          <NoPermission requestPermission={this.handlePermissionsCamera} />
         )}
         {uploading && <UploadIndicator />}
         {currentQueueIndex !== null &&
