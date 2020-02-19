@@ -57,7 +57,7 @@ class CameraHandler extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      permissionsGranted: false,
+      permissionsGranted: true,
       files: [],
       flashMode: 'auto',
       ratio: '16:9',
