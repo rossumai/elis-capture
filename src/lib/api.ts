@@ -4,7 +4,7 @@ import { from, of as _of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { first, mergeMap } from 'rxjs/operators';
 import { displayMessage } from '../common/modules/messages/actions';
-import { CredentialsBody, logoutUser } from '../common/modules/user/actions';
+import { logoutUser } from '../common/modules/user/actions';
 import { TOKEN } from '../constants/config';
 
 type HeadersInit = {};
@@ -25,7 +25,7 @@ const authDefaultSettings = (token: string, settings = {}) =>
 const withToken = (fn: (value: string | null) => any) =>
   from(AsyncStorage.getItem(TOKEN)).pipe(mergeMap(fn), first());
 
-export const authPost = (url: string, body: CredentialsBody, settings: HeadersInit) =>
+export const authPost = (url: string, body: FormData | string, settings: HeadersInit) =>
   withToken((token: string | null) => {
     if (token) {
       return ajax.post(url, body, authDefaultSettings(token, settings));

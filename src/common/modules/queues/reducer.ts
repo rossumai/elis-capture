@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import Immutable, { Immutable as ImmutableType } from 'seamless-immutable';
+import Immutable, { ImmutableObject } from 'seamless-immutable';
 import { actionT, FETCH_QUEUES_FULFILLED, SELECT_QUEUE } from './actions';
 
 export type Queue = {
@@ -14,7 +14,7 @@ export type Queue = {
   counts: {};
 };
 
-export type queueT = ImmutableType<{
+export type queueT = ImmutableObject<{
   queues: Queue[];
   currentQueueIndex: number | null;
 }>;

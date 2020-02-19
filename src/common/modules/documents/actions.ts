@@ -1,7 +1,7 @@
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { catchError, map, mergeMap, pluck } from 'rxjs/operators';
 import { authPost, errorHandler } from '../../../lib/api';
-import { queueT } from '../queues/reducer';
+import { reduxStateT } from '../../configureStore';
 import { CapturedPicture } from './../../../components/Camera/index';
 
 export const UPLOAD_DOCUMENTS = 'UPLOAD_DOCUMENTS';
@@ -30,7 +30,10 @@ export const uploadDocumentsFulffilled: uploadDocumentsFulffilledT = () => ({
   payload: {},
 });
 
-const uploadDocumentsEpic = (action$: ActionsObservable<actionT>, state: queueT) =>
+const uploadDocumentsEpic = (
+  action$: ActionsObservable<actionT>,
+  state$: StateObservable<reduxStateT>,
+) =>
   action$.pipe(
     ofType(UPLOAD_DOCUMENTS),
     // @ts-ignore
@@ -45,8 +48,8 @@ const uploadDocumentsEpic = (action$: ActionsObservable<actionT>, state: queueT)
     map((files: CapturedPicture[]) => {
       const {
         queues: { currentQueueIndex, queues },
-      } = state;
-      const { url } = currentQueueIndex && queues[currentQueueIndex]; // need to be revised since there is a type mismatch
+      } = state$.value;
+      const { url } = queues[currentQueueIndex ? currentQueueIndex : 0];
       const data = new FormData();
       files.forEach((file: CapturedPicture) => data.append('content', file));
       return [url, data];

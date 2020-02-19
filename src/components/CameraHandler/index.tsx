@@ -70,9 +70,12 @@ class CameraHandler extends React.Component<Props, State> {
 
   componentWillMount() {
     this.loadFlashmodeSettings();
+    this.props.fetchQueues();
+  }
+
+  componentDidMount() {
     this.handlePermissionsCamera();
     this.handlePermissionPhotoLibrary();
-    this.props.fetchQueues();
   }
 
   loadFlashmodeSettings = async () => {
@@ -89,14 +92,14 @@ class CameraHandler extends React.Component<Props, State> {
           const status = await request(PERMISSIONS.IOS.CAMERA);
           return this.setState({ permissionsGranted: status === 'granted' });
         }
-        return this.setState({ permissionsGranted: false });
+        return this.setState({ permissionsGranted: statusCheckCameraIos === 'granted' });
       case 'android':
         const statusCheckCameraAndroid = await check(PERMISSIONS.ANDROID.CAMERA);
         if (statusCheckCameraAndroid !== 'granted') {
           const status = await request(PERMISSIONS.ANDROID.CAMERA);
           return this.setState({ permissionsGranted: status === 'granted' });
         }
-        return this.setState({ permissionsGranted: false });
+        return this.setState({ permissionsGranted: statusCheckCameraAndroid === 'granted' });
     }
   };
 
@@ -255,7 +258,7 @@ class CameraHandler extends React.Component<Props, State> {
             />
           )
         ) : (
-          <NoPermission requestPermission={this.handlePermissionsCamera} />
+          <NoPermission requestPermission={this.handlePermissionsCamera} /> // TODO: implement goToSettings when permissions are denied
         )}
         {uploading && <UploadIndicator />}
         {currentQueueIndex !== null &&

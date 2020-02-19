@@ -4,6 +4,7 @@ import { Icon } from 'react-native-elements';
 import Dropdown from 'react-native-modal-dropdown';
 import SeamlessImmutable from 'seamless-immutable';
 import { Queue } from '../../common/modules/queues/reducer';
+import { computeSafeArea } from '../../utils/computeSafeArea';
 
 type Props = {
   queues: SeamlessImmutable.ImmutableArray<Queue>;
@@ -27,12 +28,12 @@ class QueuePicker extends React.Component<Props> {
           flex: 1,
           height: 50,
           right: 5,
+          top: computeSafeArea(15),
           width: '50%',
           position: 'absolute',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-end',
-          backgroundColor: 'white',
         }}>
         <Dropdown
           // @ts-ignore

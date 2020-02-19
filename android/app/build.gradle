@@ -183,6 +183,9 @@ android {
 }
 
 dependencies {
+    implementation project(':rn-fetch-blob')
+    implementation project(':react-native-image-resizer')
+    implementation project(':react-native-image-picker')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-svg')
     implementation project(':react-native-permissions')

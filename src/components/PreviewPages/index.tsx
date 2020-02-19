@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageBackground, View } from 'react-native';
 import Swiper from 'react-native-swiper';
+import { computeSafeArea } from '../../utils/computeSafeArea';
 import { CapturedPicture } from '../Camera';
 import createPagiantion from './components/Pagination';
 import RedoIcon from './components/RedoIcon';
@@ -32,7 +33,7 @@ const PreviewPages = ({ pages, remove, redo, addPages }: Props) => (
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                padding: 10,
+                padding: computeSafeArea(25),
                 backgroundColor: 'rgba(0, 0, 0, 0.4)',
               }}>
               <RemoveIcon remove={() => remove(index)} />
