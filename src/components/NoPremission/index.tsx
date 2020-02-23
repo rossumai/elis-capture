@@ -7,7 +7,9 @@ type Props = { requestPermission: () => void };
 const NoPermission = ({ requestPermission }: Props) => (
   <View style={styles.NoPermissionWrapper}>
     <Text style={styles.NoPermissionHeading}>Camera permission missing</Text>
-    <Text style={styles.NoPermissionText}>There is not much we can do without your permission to use camera.</Text>
+    <Text style={styles.NoPermissionText}>
+      There is not much we can do without your permission to use camera.
+    </Text>
     <Button
       onPress={requestPermission}
       icon={{

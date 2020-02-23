@@ -14,6 +14,7 @@ type Props = {
   addPages: () => void;
   redo: () => void;
   sizeLimitExceeded: boolean;
+  addFileFromLibrary: () => Promise<void>;
 };
 
 const Preview = ({
@@ -25,6 +26,7 @@ const Preview = ({
   addPages,
   redo,
   sizeLimitExceeded,
+  addFileFromLibrary,
 }: Props) => (
   <View style={styles.Preview}>
     <PreviewPages remove={remove} redo={redo} pages={files} addPages={addPages} />
@@ -33,6 +35,7 @@ const Preview = ({
       removeAll={removeAll}
       send={send}
       sizeLimitExceeded={sizeLimitExceeded}
+      addFileFromLibrary={addFileFromLibrary}
     />
   </View>
 );

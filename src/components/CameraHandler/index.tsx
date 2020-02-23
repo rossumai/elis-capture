@@ -2,18 +2,23 @@ import { last, set } from 'lodash';
 import React, { createRef } from 'react';
 import { AsyncStorage, Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { RNCamera, TakePictureResponse } from 'react-native-camera';
+import ImagePicker, { ImagePickerOptions, ImagePickerResponse } from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
-import { check, PERMISSIONS, request } from 'react-native-permissions';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import RNFetchBlob from 'rn-fetch-blob';
 import SeamlessImmutable from 'seamless-immutable';
 import { reduxStateT, rootActionT } from '../../common/configureStore';
 import { uploadDocuments } from '../../common/modules/documents/actions';
+import { displayMessage } from '../../common/modules/messages/actions';
 import { fetchQueues, selectQueue } from '../../common/modules/queues/actions';
 import { Queue } from '../../common/modules/queues/reducer';
 import { FLASHMODE } from '../../constants/config';
 import { isFlashmodeType } from '../../types/typeGuardFlashmode';
+import {
+  handlePermissionsCamera,
+  handlePermissionsLibraryIos,
+} from '../../utils/Permissions/permissionsHandler';
 import Camera, { CapturedPicture } from '../Camera';
 import MessageContainer, { Message } from '../Message';
 import NoPermission from '../NoPremission';
@@ -26,6 +31,12 @@ export type FlashMode = 'auto' | 'on' | 'off';
 
 const { width, height } = Dimensions.get('window');
 
+const imagePickerOptions: ImagePickerOptions = {
+  mediaType: 'photo',
+  rotation: 0,
+  allowsEditing: false,
+};
+
 type Props = {
   queues: SeamlessImmutable.ImmutableArray<Queue>;
   currentQueueIndex: number | null;
@@ -33,10 +44,12 @@ type Props = {
   send: (file: CapturedPicture[]) => rootActionT;
   uploading: boolean;
   fetchQueues: () => rootActionT;
+  displayMessage: (text: string) => rootActionT;
 };
 type State = {
-  permissionsGranted: boolean;
+  permissionsCameraGranted: boolean;
   files: CapturedPicture[];
+  libraryFiles: CapturedPicture[];
   flashMode: FlashMode;
   ratio: string;
   showPreview: boolean;
@@ -57,8 +70,9 @@ class CameraHandler extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      permissionsGranted: true,
+      permissionsCameraGranted: true,
       files: [],
+      libraryFiles: [],
       flashMode: 'auto',
       ratio: '16:9',
       showPreview: false,
@@ -70,12 +84,8 @@ class CameraHandler extends React.Component<Props, State> {
 
   componentWillMount() {
     this.loadFlashmodeSettings();
-    this.props.fetchQueues();
-  }
-
-  componentDidMount() {
     this.handlePermissionsCamera();
-    this.handlePermissionPhotoLibrary();
+    this.props.fetchQueues();
   }
 
   loadFlashmodeSettings = async () => {
@@ -85,33 +95,16 @@ class CameraHandler extends React.Component<Props, State> {
   };
 
   handlePermissionsCamera = async () => {
-    switch (Platform.OS) {
-      case 'ios':
-        const statusCheckCameraIos = await check(PERMISSIONS.IOS.CAMERA);
-        if (statusCheckCameraIos !== 'granted') {
-          const status = await request(PERMISSIONS.IOS.CAMERA);
-          return this.setState({ permissionsGranted: status === 'granted' });
-        }
-        return this.setState({ permissionsGranted: statusCheckCameraIos === 'granted' });
-      case 'android':
-        const statusCheckCameraAndroid = await check(PERMISSIONS.ANDROID.CAMERA);
-        if (statusCheckCameraAndroid !== 'granted') {
-          const status = await request(PERMISSIONS.ANDROID.CAMERA);
-          return this.setState({ permissionsGranted: status === 'granted' });
-        }
-        return this.setState({ permissionsGranted: statusCheckCameraAndroid === 'granted' });
-    }
+    const permissionStatus = await handlePermissionsCamera()();
+    return this.setState({ permissionsCameraGranted: permissionStatus });
   };
 
   handlePermissionPhotoLibrary = async () => {
     if (Platform.OS === 'ios') {
-      const statusCheckPhotoLibraryIos = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      if (statusCheckPhotoLibraryIos !== 'granted') {
-        const status = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-        return this.setState({ permissionsGranted: status === 'granted' });
-      }
-      return this.setState({ permissionsGranted: false });
+      const permissionsStatus = await handlePermissionsLibraryIos()();
+      return permissionsStatus;
     }
+    return;
   };
 
   getRatio = async () => {
@@ -134,10 +127,41 @@ class CameraHandler extends React.Component<Props, State> {
     }
   };
 
-  resizeImage = async (image: TakePictureResponse) => {
+  resizeImage = async (image: TakePictureResponse | ImagePickerResponse) => {
     const resizedImage = await ImageResizer.createResizedImage(image.uri, 1240, 1240, 'JPEG', 50);
     const responseBase64 = await RNFetchBlob.fs.readFile(resizedImage.path, 'base64');
     return { ...resizedImage, base64: responseBase64 };
+  };
+
+  addFileFromLibrary = async () => {
+    this.setState({ shooting: true });
+    const hasPermission = await this.handlePermissionPhotoLibrary();
+    if (hasPermission) {
+      const { files, redoing } = this.state;
+      ImagePicker.launchImageLibrary(imagePickerOptions, async (response: ImagePickerResponse) => {
+        if (response.error) {
+          this.props.displayMessage(`${response.error}`);
+          return null;
+        } else if (response.didCancel) {
+          return null;
+        } else {
+          const libraryFile = await this.resizeImage(response);
+          const newPhoto = { ...libraryFile, size: libraryFile.size };
+
+          const newFiles =
+            typeof redoing === 'number' ? set(files, redoing, newPhoto) : [...files, newPhoto];
+
+          return this.setState({
+            files: newFiles,
+            showPreview: true,
+            redoing: null,
+            shooting: false,
+            sizeLimitExceeded: this.isSizeLimitExceeded(newFiles),
+          });
+        }
+      });
+    }
+    this.setState({ shooting: false });
   };
 
   shoot = async () => {
@@ -170,15 +194,12 @@ class CameraHandler extends React.Component<Props, State> {
 
   remove = (index: number) => {
     const { files } = this.state;
-    if (index) {
-      const newFiles = files.filter((_, i) => index !== i);
-      this.setState({
-        files: newFiles,
-        sizeLimitExceeded: this.isSizeLimitExceeded(newFiles),
-        showPreview: newFiles.length !== 0,
-      });
-    }
-    return;
+    const newFiles = files.filter((_, i) => index !== i);
+    this.setState({
+      files: newFiles,
+      sizeLimitExceeded: this.isSizeLimitExceeded(newFiles),
+      showPreview: newFiles.length !== 0,
+    });
   };
 
   removeAll = () => {
@@ -217,7 +238,7 @@ class CameraHandler extends React.Component<Props, State> {
 
   render() {
     const {
-      permissionsGranted,
+      permissionsCameraGranted,
       files,
       flashMode,
       showPreview,
@@ -226,9 +247,10 @@ class CameraHandler extends React.Component<Props, State> {
     } = this.state;
     const { queues, currentQueueIndex, uploading } = this.props;
     return (
-      <View style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <View
+        style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#1b1922' }}>
         <MessageContainer />
-        {permissionsGranted ? (
+        {permissionsCameraGranted ? (
           showPreview ? (
             <Preview
               files={files}
@@ -240,6 +262,7 @@ class CameraHandler extends React.Component<Props, State> {
               multiple={files.length > 1}
               ratio={this.state.ratio}
               sizeLimitExceeded={sizeLimitExceeded}
+              addFileFromLibrary={this.addFileFromLibrary}
             />
           ) : (
             <Camera
@@ -255,10 +278,11 @@ class CameraHandler extends React.Component<Props, State> {
               pagesCount={files.length}
               lastFile={last(files)}
               openPreview={this.openPreview}
+              addFileFromLibrary={this.addFileFromLibrary}
             />
           )
         ) : (
-          <NoPermission requestPermission={this.handlePermissionsCamera} /> // TODO: implement goToSettings when permissions are denied
+          <NoPermission requestPermission={handlePermissionsCamera()} /> // TODO: implement goToSettings when permissions are denied
         )}
         {uploading && <UploadIndicator />}
         {currentQueueIndex !== null &&
@@ -295,6 +319,7 @@ const mapDispatchToProps = (dispatch: Dispatch<rootActionT>) => ({
   send: (files: CapturedPicture[]) => dispatch(uploadDocuments(files)),
   selectQueue: (index: number) => dispatch(selectQueue(index)),
   fetchQueues: () => dispatch(fetchQueues()),
+  displayMessage: (text: string) => dispatch(displayMessage(text)),
 });
 
 const mapStateToProps = (state: reduxStateT) => ({

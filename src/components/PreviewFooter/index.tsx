@@ -1,15 +1,22 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { TouchableOpacity, View } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 
 type Props = {
   multiple: boolean;
   removeAll: () => void;
   send: () => void;
   sizeLimitExceeded: boolean;
+  addFileFromLibrary: () => Promise<void>;
 };
 
-const PreviewFooter = ({ removeAll, multiple, send, sizeLimitExceeded }: Props) => (
+const PreviewFooter = ({
+  removeAll,
+  multiple,
+  send,
+  sizeLimitExceeded,
+  addFileFromLibrary,
+}: Props) => (
   <View
     style={{
       flexDirection: 'row',
@@ -19,16 +26,20 @@ const PreviewFooter = ({ removeAll, multiple, send, sizeLimitExceeded }: Props) 
       justifyContent: 'space-between',
       flex: 1,
       paddingBottom: 10,
-    }}
-  >
+    }}>
     <Button
       backgroundColor="transparent"
       onPress={removeAll}
       icon={{ name: multiple ? 'delete-sweep' : 'delete', size: 20 }}
       title={multiple ? 'All' : 'Delete'}
       fontSize={18}
-      buttonStyle={{ height: 42 }}
+      buttonStyle={{ height: 42, backgroundColor: '#ff3030', borderRadius: 10 }}
     />
+    <TouchableOpacity
+      onPress={addFileFromLibrary}
+      style={{ width: 50, height: 50, paddingTop: 10, backgroundColor: 'grey', borderRadius: 25 }}>
+      <Icon name="image-plus" type="material-community" color="white" size={30} />
+    </TouchableOpacity>
     <Button
       onPress={send}
       disabled={sizeLimitExceeded}

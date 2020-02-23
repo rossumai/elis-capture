@@ -1,0 +1,18 @@
+{
+    "permissions": {
+        "alert_messages": {
+            "camera": {
+                "main": "Allow \"Elis Capture\" to access your Camera?",
+                "sub": "The app needs access to your camera when you want to upload a document image."
+            },
+            "camera_roll": {
+                "main": "Allow \"Elis Capture\" to access your photo gallery?",
+                "sub": "The app needs access to your photo library when you want to upload a document image."
+            }
+        },
+        "alert_button_text": {
+            "go_to_settings": "Go to settings",
+            "cancel": "Cancel"
+        }
+    }
+}

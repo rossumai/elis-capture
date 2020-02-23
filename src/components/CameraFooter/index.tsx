@@ -16,6 +16,7 @@ type Props = {
   shoot: () => void;
   send: () => void;
   sizeLimitExceeded: boolean;
+  addFileFromLibrary: () => Promise<void>;
 };
 
 const CameraFooter = ({
@@ -28,6 +29,7 @@ const CameraFooter = ({
   shooting,
   sizeLimitExceeded,
   send,
+  addFileFromLibrary,
 }: Props) => (
   <View
     style={{
@@ -44,6 +46,7 @@ const CameraFooter = ({
       lastFile={lastFile}
       shooting={shooting}
       pagesCount={pagesCount}
+      addFileFromLibrary={addFileFromLibrary}
     />
     <CenterFooter sizeLimitExceeded={sizeLimitExceeded} shoot={shoot} />
     <RightFooter

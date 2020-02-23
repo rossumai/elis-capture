@@ -18,6 +18,7 @@ const IndexNumber = ({ value, style, textStyle }: Props) => (
     }}>
     <Text
       style={{
+        top: 2,
         fontSize: 20,
         color: 'white',
         textAlign: 'center',

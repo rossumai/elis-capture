@@ -1,0 +1,224 @@
+# Android
+
+fastlane_require 'dotenv'
+
+ENV['APPLICATION_VERSION'] = "1.0"
+ENV['ENVIRONMENT'] = "PRODUCTION"
+XCODE_WORKSPACE_PATH = "./ios/elisCapture.xcworkspace"
+XCODE_PROJECT_PATH   = "./ios/elisCapture.xcodeproj"
+GRADLE_FILE_PATH = "./android/app/build.gradle"
+GRADLE_FILE_FOLDER_PATH = "./android/app/"
+
+before_all do
+  Dotenv.overload '../.env.fastlane'
+end
+
+desc "Bump build number and git tag"
+lane :bump_version do
+  ensure_git_branch
+
+  add_git_tag(tag: (last_git_tag.to_i + 1).to_s)
+end
+
+platform :android do
+  desc "Build and submit Elis Capture to Play Store Beta"
+  lane :test do
+    build(type: :release_internal)
+
+    # Distribute for beta testing
+    upload_to_play_store(
+      package_name: 'com.eliscapture',
+      track: 'beta',
+      apk: './android/app/build/outputs/apk/release/app-release.apk',
+      check_superseded_tracks: true
+    )
+  end
+
+  desc "Build Elis Capture application type"
+  private_lane :build do |options|
+    # Ensure all required options are in place
+    %i(type).each do |option|
+      raise "This argument #{option} needs to be set" unless present?(options[option])
+    end
+
+    # Type of build
+    type = options[:type].to_sym
+
+    unless %i(release_production release_internal).include? type.to_sym
+      raise "This build type #{type} is not supported"
+    end
+
+    # Ensure all required environment variables are in place
+    check_envs(%w(ENVIRONMENT APPLICATION_VERSION))
+
+
+    # Generate app configuration
+    # TODO: Check that we're using proper environment variables
+    # generate_env_file
+
+    android_set_version_code(
+      version_code: last_git_tag,
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    android_set_version_name(
+      version_name: "#{ENV['APPLICATION_VERSION']}.#{last_git_tag}".to_s,
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    build_android_app(
+      task: 'assemble',
+      flavor: '',
+      build_type: 'release',
+      gradle_path: "./android/gradlew",
+      flags: "--build-file #{GRADLE_FILE_PATH} --stacktrace --no-daemon"
+    )
+
+  end
+end
+
+platform :ios do
+  desc "Download appstore, release and development certificates"
+  lane :fetch_certificates do
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture",
+      type: "development",
+      readonly: true
+    )
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture.adhoc",
+      type: "adhoc",
+      readonly: true
+    )
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture",
+      type: "appstore",
+      readonly: true
+    )
+  end
+
+  desc "Regenerate development and release certificate including new devices"
+  lane :regenerate_certificates do
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture",
+      type: "development",
+      force_for_new_devices: true
+    )
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture",
+      type: "adhoc",
+      force_for_new_devices: true
+    )
+  end
+
+  desc "Build and submit Elis Capture to iTunes"
+  lane :itunes do |options|
+    # Ensure all required environment variables are in place
+    # check_envs(%w(FABRIC_API_KEY FABRIC_API_SECRET))
+
+    version = options[:version] || ENV['APPLICATION_VERSION']
+
+    # Compile application
+    build(
+      type: :release_production,
+      build_number: latest_testflight_build_number(version: version) + 1,
+      version_number: latest_testflight_build_number(version: version)
+    )
+
+    # Push it to iTunes
+    pilot(
+        skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Build Elis Capture application type"
+  private_lane :build do |options|
+    # Ensure all required options are in place
+    %i(type).each do |option|
+      raise "This argument #{option} needs to be set" unless present?(options[option])
+    end
+
+    # Type of build
+    type = options[:type].to_sym
+
+    unless %i(release_production release_internal).include? type.to_sym
+      raise "This build type #{type} is not supported"
+    end
+
+    # Ensure all required environment variables are in place
+    check_envs(%w(ENVIRONMENT))
+
+    options[:version_code]        ||= ENV['BUILD_NUMBER']
+    options[:application_version] ||= ENV['APPLICATION_VERSION']
+
+    # Generate app configuration
+    # TODO: Check that we're using proper environment variables
+    # generate_env_file
+
+    MATCH = {
+      release_internal: "adhoc",
+      release_production: "appstore"
+    }
+
+    sync_code_signing(
+      type: MATCH[type],
+      readonly: true
+    )
+
+    increment_build_number(
+      build_number: options[:build_number].to_s,
+      xcodeproj: XCODE_PROJECT_PATH
+    )
+
+    increment_version_number(
+      version_number: options[:version_number].to_s,
+      xcodeproj: XCODE_PROJECT_PATH
+    )
+
+    build_ios_app(
+      scheme: SCHEME[type],
+      export_method: EXPORT_METHOD[:wrapper][type],
+      configuration: CONFIGURATION[:wrapper][type],
+      workspace: XCODE_WORKSPACE_PATH
+    )
+  end
+end
+
+def check_envs(variables)
+  variables.each do |env|
+    unless present?(ENV[env])
+      raise "You need to specify #{env} environment"
+    end
+  end
+end
+
+def present?(value)
+  !value.nil? && !value.to_s.empty?
+end
+
+
+# Read and write version from/into files and store it to hash
+def increment_version_number_android
+  properties = {}
+  properties['versionCode'] = increment_android_code
+  properties['versionName'] = increment_android_name
+  properties
+end
+
+def increment_android_code
+  versionCode = File.read('../android/versionCode')
+  versionCode = versionCode.succ
+  f = File.new('../android/versionCode', 'w')
+  f.write(versionCode)
+  f.close
+  versionCode.gsub(/\n/, '')
+end
+
+def increment_android_name
+  versionName = File.read('../android/versionName')
+  versionName = versionName.succ
+  f = File.new('../android/versionName', 'w')
+  f.write(versionName)
+  f.close
+  versionName.gsub(/\n/, '')
+end
