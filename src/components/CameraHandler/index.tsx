@@ -104,7 +104,7 @@ class CameraHandler extends React.Component<Props, State> {
       const permissionsStatus = await handlePermissionsLibraryIos()();
       return permissionsStatus;
     }
-    return;
+    return true;
   };
 
   getRatio = async () => {
