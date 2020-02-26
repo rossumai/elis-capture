@@ -77,7 +77,10 @@ platform :android do
   end
 end
 
+#############################IOS#############################
+
 platform :ios do
+
   desc "Download appstore, release and development certificates"
   lane :fetch_certificates do
     sync_code_signing(
@@ -85,101 +88,63 @@ platform :ios do
       type: "development",
       readonly: true
     )
-    sync_code_signing(
-      app_identifier: "ai.rossum.elis.capture.adhoc",
-      type: "adhoc",
-      readonly: true
-    )
-    sync_code_signing(
-      app_identifier: "ai.rossum.elis.capture",
-      type: "appstore",
-      readonly: true
-    )
   end
 
-  desc "Regenerate development and release certificate including new devices"
-  lane :regenerate_certificates do
+  desc "Build and deploy iOS app"
+  lane :stage do    
+
     sync_code_signing(
-      app_identifier: "ai.rossum.elis.capture",
-      type: "development",
-      force_for_new_devices: true
-    )
-    sync_code_signing(
-      app_identifier: "ai.rossum.elis.capture",
-      type: "adhoc",
-      force_for_new_devices: true
-    )
-  end
-
-  desc "Build and submit Elis Capture to iTunes"
-  lane :itunes do |options|
-    # Ensure all required environment variables are in place
-    # check_envs(%w(FABRIC_API_KEY FABRIC_API_SECRET))
-
-    version = options[:version] || ENV['APPLICATION_VERSION']
-
-    # Compile application
-    build(
-      type: :release_production,
-      build_number: latest_testflight_build_number(version: version) + 1,
-      version_number: latest_testflight_build_number(version: version)
+    app_identifier: "ai.rossum.elis.capture",
+    type: "appstore"
     )
 
-    # Push it to iTunes
-    pilot(
-        skip_waiting_for_build_processing: true
-    )
-  end
+    plistBuildNumber = get_build_number(
+      xcodeproj: XCODE_PROJECT_PATH,
+    ).to_i
 
-  desc "Build Elis Capture application type"
-  private_lane :build do |options|
-    # Ensure all required options are in place
-    %i(type).each do |option|
-      raise "This argument #{option} needs to be set" unless present?(options[option])
+    latestTestflightBuildNumber = latest_testflight_build_number(app_identifier: "ai.rossum.elis.capture").to_i
+    resultBuildNumber = plistBuildNumber
+
+    if plistBuildNumber > latestTestflightBuildNumber 
+      resultBuildNumber = plistBuildNumber
+    elsif plistBuildNumber == latestTestflightBuildNumber
+      resultBuildNumber = plistBuildNumber.to_i + 1
+    else
+      puts "Warning, your fastlane build number is bigger then your xcode build number"
+      resultBuildNumber = latestTestflightBuildNumber.to_i + 1
     end
-
-    # Type of build
-    type = options[:type].to_sym
-
-    unless %i(release_production release_internal).include? type.to_sym
-      raise "This build type #{type} is not supported"
-    end
-
-    # Ensure all required environment variables are in place
-    check_envs(%w(ENVIRONMENT))
-
-    options[:version_code]        ||= ENV['BUILD_NUMBER']
-    options[:application_version] ||= ENV['APPLICATION_VERSION']
-
-    # Generate app configuration
-    # TODO: Check that we're using proper environment variables
-    # generate_env_file
-
-    MATCH = {
-      release_internal: "adhoc",
-      release_production: "appstore"
-    }
-
-    sync_code_signing(
-      type: MATCH[type],
-      readonly: true
-    )
 
     increment_build_number(
-      build_number: options[:build_number].to_s,
-      xcodeproj: XCODE_PROJECT_PATH
-    )
-
-    increment_version_number(
-      version_number: options[:version_number].to_s,
+      build_number: resultBuildNumber.to_s,
       xcodeproj: XCODE_PROJECT_PATH
     )
 
     build_ios_app(
-      scheme: SCHEME[type],
-      export_method: EXPORT_METHOD[:wrapper][type],
-      configuration: CONFIGURATION[:wrapper][type],
+      scheme: "elisCapture",
+      configuration: "Release",
+      export_method: "app-store",
       workspace: XCODE_WORKSPACE_PATH
+    )
+
+    if resultBuildNumber != plistBuildNumber 
+      # Commit the version bump
+      commit_version_bump(
+        xcodeproj: XCODE_PROJECT_PATH,
+        force: true
+      )
+    end
+
+
+    # Add a git tag for this build. This will automatically
+    # use an appropriate git tag name
+    add_git_tag
+
+    # # Push the new commit and tag bacsk to your git remote
+    # push_to_git_remote
+
+    pilot(
+      app_identifier: "ai.rossum.elis.capture",
+      skip_waiting_for_build_processing: true
     )
   end
 end
