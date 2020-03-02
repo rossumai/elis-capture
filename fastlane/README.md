@@ -15,20 +15,17 @@ Install _fastlane_ using
 or alternatively using `brew cask install fastlane`
 
 # Available Actions
-### bump_version
-```
-fastlane bump_version
-```
-Bump build number and git tag
-
-----
-
 ## Android
-### android test
+### android store
 ```
-fastlane android test
+fastlane android store
 ```
-Build and submit Elis Capture to Play Store Beta
+Build and submit Elis Capture to Play Store
+### android stage
+```
+fastlane android stage
+```
+
 
 ----
 

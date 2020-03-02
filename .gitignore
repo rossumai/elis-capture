@@ -1,3 +1,7 @@
+# Data sensitive files
+*/fastlane/elisCaptureFastlaneDeployment.json
+*/fastlane/.env
+
 # OSX
 #
 .DS_Store

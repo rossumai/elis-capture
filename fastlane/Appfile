@@ -1,10 +1,2 @@
 apple_id "ios@rossum.ai"
 json_key_file "fastlane/elisCaptureFastlaneDeployment.json"
-
-for_platform :ios do
-  app_identifier "ai.rossum.elis.capture.adhoc"
-
-  for_lane :itunes do
-    app_identifier "ai.rossum.elis.capture"
-  end
-end

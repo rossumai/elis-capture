@@ -1,79 +1,95 @@
-# Android
-
 fastlane_require 'dotenv'
 
 ENV['APPLICATION_VERSION'] = "1.0"
 ENV['ENVIRONMENT'] = "PRODUCTION"
+ENV['PROJECT_NAME_ANDROID'] = 'ai.rossum.elis.capture'
 XCODE_WORKSPACE_PATH = "./ios/elisCapture.xcworkspace"
 XCODE_PROJECT_PATH   = "./ios/elisCapture.xcodeproj"
 GRADLE_FILE_PATH = "./android/app/build.gradle"
 GRADLE_FILE_FOLDER_PATH = "./android/app/"
 
 before_all do
-  Dotenv.overload '../.env.fastlane'
-end
-
-desc "Bump build number and git tag"
-lane :bump_version do
-  ensure_git_branch
-
-  add_git_tag(tag: (last_git_tag.to_i + 1).to_s)
+  Dotenv.overload './.env'
 end
 
 platform :android do
-  desc "Build and submit Elis Capture to Play Store Beta"
-  lane :test do
-    build(type: :release_internal)
 
-    # Distribute for beta testing
-    upload_to_play_store(
-      package_name: 'com.eliscapture',
-      track: 'beta',
-      apk: './android/app/build/outputs/apk/release/app-release.apk',
-      check_superseded_tracks: true
-    )
-  end
-
-  desc "Build Elis Capture application type"
-  private_lane :build do |options|
-    # Ensure all required options are in place
-    %i(type).each do |option|
-      raise "This argument #{option} needs to be set" unless present?(options[option])
-    end
-
-    # Type of build
-    type = options[:type].to_sym
-
-    unless %i(release_production release_internal).include? type.to_sym
-      raise "This build type #{type} is not supported"
-    end
-
-    # Ensure all required environment variables are in place
-    check_envs(%w(ENVIRONMENT APPLICATION_VERSION))
-
-
-    # Generate app configuration
-    # TODO: Check that we're using proper environment variables
-    # generate_env_file
+  desc "Build and submit Elis Capture to Play Store"
+  lane :store do
 
     android_set_version_code(
-      version_code: last_git_tag,
+      version_code: options[:build_number],
       gradle_file: GRADLE_FILE_PATH
     )
 
     android_set_version_name(
-      version_name: "#{ENV['APPLICATION_VERSION']}.#{last_git_tag}".to_s,
+      version_name: options[:version_number],
       gradle_file: GRADLE_FILE_PATH
     )
 
     build_android_app(
-      task: 'assemble',
+      task: 'bundle',
       flavor: '',
       build_type: 'release',
       gradle_path: "./android/gradlew",
       flags: "--build-file #{GRADLE_FILE_PATH} --stacktrace --no-daemon"
     )
 
+    # Push it to Play Store
+    upload_to_play_store(
+      package_name: "#{ENV['PROJECT_NAME_ANDROID']}",
+      track: 'production',
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+    )
+  end
+
+  lane :stage do 
+    versionCode = android_get_version_code(
+      gradle_file: GRADLE_FILE_PATH
+    ).to_i + 1
+
+    android_set_version_code(
+      version_code: versionCode,
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    build_android_app(
+      task: 'bundle',
+      flavor: '',
+      build_type: 'release',
+      gradle_path: "./android/gradlew",
+      flags: "--build-file #{GRADLE_FILE_PATH} --stacktrace --no-daemon",
+      properties: {
+        "android.injected.signing.store.file" => "#{ENV['MYAPP_RELEASE_STORE_FILE']}",
+        "android.injected.signing.store.password" => "#{ENV['MYAPP_RELEASE_STORE_PASSWORD']}",
+        "android.injected.signing.key.alias" => "#{ENV['MYAPP_RELEASE_KEY_ALIAS']}",
+        "android.injected.signing.key.password" => "#{ENV['MYAPP_RELEASE_KEY_PASSWORD']}",
+      } 
+    )
+
+    #Distribute for beta testing
+    upload_to_play_store(
+      package_name: "#{ENV['PROJECT_NAME_ANDROID']}",
+      track: 'beta',
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+    )
+
+    git_commit(path: "./android/app/build.gradle", message: "Version Bump")
+
+    add_git_tag(
+      prefix: 'android',
+      postfix: 'stage',
+      tag: versionCode.to_s
+    )
+
+  # Push the new commit and tag back to your git remote - TODO: uncomment next lines only in case of remote deployer, i.e. Bitrise
+    # push_git_tags
+    # push_to_git_remote(
+    #   remote: "origin",         # optional, default: "origin"
+    #   remote_branch: "master", # optional, default is set to local_branch
+    # )
   end
 end
 
@@ -139,7 +155,7 @@ platform :ios do
     # use an appropriate git tag name
     add_git_tag
 
-    # # Push the new commit and tag bacsk to your git remote
+    # Push the new commit and tag back to your git remote - TODO: uncomment next line only in case of remote deployer, i.e. Bitrise
     # push_to_git_remote
 
     pilot(
@@ -159,31 +175,4 @@ end
 
 def present?(value)
   !value.nil? && !value.to_s.empty?
-end
-
-
-# Read and write version from/into files and store it to hash
-def increment_version_number_android
-  properties = {}
-  properties['versionCode'] = increment_android_code
-  properties['versionName'] = increment_android_name
-  properties
-end
-
-def increment_android_code
-  versionCode = File.read('../android/versionCode')
-  versionCode = versionCode.succ
-  f = File.new('../android/versionCode', 'w')
-  f.write(versionCode)
-  f.close
-  versionCode.gsub(/\n/, '')
-end
-
-def increment_android_name
-  versionName = File.read('../android/versionName')
-  versionName = versionName.succ
-  f = File.new('../android/versionName', 'w')
-  f.write(versionName)
-  f.close
-  versionName.gsub(/\n/, '')
 end
