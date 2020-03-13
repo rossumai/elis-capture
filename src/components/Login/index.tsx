@@ -87,7 +87,7 @@ class Login extends React.Component<Props, State> {
                   letterSpacing: 1,
                   fontWeight: 'bold',
                 }}>
-                ELIS
+                ROSSUM
               </Text>
               <Text>{'   '}</Text>
               <Text

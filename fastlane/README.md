@@ -20,7 +20,7 @@ or alternatively using `brew cask install fastlane`
 ```
 fastlane android store
 ```
-Build and submit Elis Capture to Play Store
+Build and submit Rossum Capture to Play Store
 ### android stage
 ```
 fastlane android stage

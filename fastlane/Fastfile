@@ -14,7 +14,7 @@ end
 
 platform :android do
 
-  desc "Build and submit Elis Capture to Play Store"
+  desc "Build and submit Rossum Capture to Play Store"
   lane :store do
 
     android_set_version_code(
