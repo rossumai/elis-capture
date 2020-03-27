@@ -38,13 +38,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use the camera so we could provide you the best experience</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Allow $(PRODUCT_NAME) to use the camera so you could capture quickly an image of your document and send it for further processing.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to save photos so we could easily save your documents in the library</string>
+	<string>Give $(PRODUCT_NAME) permission to save photos so we could easily save your processed documents in the library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to access your photos so you could easily upload documents you've taken before</string>
+	<string>Give $(PRODUCT_NAME) permission to access your photos so you could easily upload documents you've taken before for further processing</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
