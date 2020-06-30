@@ -12,7 +12,6 @@
       "es2018.promise"
     ],
     "moduleResolution": "node",
-    "noEmit": true,
     "noImplicitAny": true,
     "strict": true,
     "target": "esnext",

@@ -53,6 +53,8 @@ target 'elisCapture' do
 
   pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
 
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'elisCaptureTests' do
     inherit! :search_paths
     # Pods for testing
