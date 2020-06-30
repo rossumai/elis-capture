@@ -1,4 +1,4 @@
-package com.eliscapture;
+package ai.rossum.elis.capture;
 
 import com.facebook.react.ReactActivity;
 

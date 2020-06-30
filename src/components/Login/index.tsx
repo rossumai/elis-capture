@@ -64,12 +64,15 @@ class Login extends React.Component<Props, State> {
         <MessageContainer />
         <View
           style={{
-            flex: keyboardIsOpen ? 0.5 : 2,
+            flex: keyboardIsOpen ? 1 : 2,
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-end',
           }}>
-          {keyboardIsOpen || <Image source={logo} style={{ width: 70, height: 70 }} />}
+          <Image
+            source={logo}
+            style={keyboardIsOpen ? { width: 35, height: 35 } : { width: 70, height: 70 }}
+          />
           <View
             style={{
               flexDirection: 'column',
@@ -84,7 +87,7 @@ class Login extends React.Component<Props, State> {
                   letterSpacing: 1,
                   fontWeight: 'bold',
                 }}>
-                ELIS
+                ROSSUM
               </Text>
               <Text>{'   '}</Text>
               <Text

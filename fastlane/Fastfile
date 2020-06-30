@@ -1,0 +1,178 @@
+fastlane_require 'dotenv'
+
+ENV['APPLICATION_VERSION'] = "1.0"
+ENV['ENVIRONMENT'] = "PRODUCTION"
+ENV['PROJECT_NAME_ANDROID'] = 'ai.rossum.elis.capture'
+XCODE_WORKSPACE_PATH = "./ios/elisCapture.xcworkspace"
+XCODE_PROJECT_PATH   = "./ios/elisCapture.xcodeproj"
+GRADLE_FILE_PATH = "./android/app/build.gradle"
+GRADLE_FILE_FOLDER_PATH = "./android/app/"
+
+before_all do
+  Dotenv.overload './.env'
+end
+
+platform :android do
+
+  desc "Build and submit Rossum Capture to Play Store"
+  lane :store do
+
+    android_set_version_code(
+      version_code: options[:build_number],
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    android_set_version_name(
+      version_name: options[:version_number],
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    build_android_app(
+      task: 'bundle',
+      flavor: '',
+      build_type: 'release',
+      gradle_path: "./android/gradlew",
+      flags: "--build-file #{GRADLE_FILE_PATH} --stacktrace --no-daemon"
+    )
+
+    # Push it to Play Store
+    upload_to_play_store(
+      package_name: "#{ENV['PROJECT_NAME_ANDROID']}",
+      track: 'production',
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+    )
+  end
+
+  lane :stage do 
+    versionCode = android_get_version_code(
+      gradle_file: GRADLE_FILE_PATH
+    ).to_i + 1
+
+    android_set_version_code(
+      version_code: versionCode,
+      gradle_file: GRADLE_FILE_PATH
+    )
+
+    build_android_app(
+      task: 'bundle',
+      flavor: '',
+      build_type: 'release',
+      gradle_path: "./android/gradlew",
+      flags: "--build-file #{GRADLE_FILE_PATH} --stacktrace --no-daemon",
+      properties: {
+        "android.injected.signing.store.file" => "#{ENV['MYAPP_RELEASE_STORE_FILE']}",
+        "android.injected.signing.store.password" => "#{ENV['MYAPP_RELEASE_STORE_PASSWORD']}",
+        "android.injected.signing.key.alias" => "#{ENV['MYAPP_RELEASE_KEY_ALIAS']}",
+        "android.injected.signing.key.password" => "#{ENV['MYAPP_RELEASE_KEY_PASSWORD']}",
+      } 
+    )
+
+    #Distribute for beta testing
+    upload_to_play_store(
+      package_name: "#{ENV['PROJECT_NAME_ANDROID']}",
+      track: 'beta',
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      skip_upload_apk: true,
+    )
+
+    git_commit(path: "./android/app/build.gradle", message: "Version Bump")
+
+    add_git_tag(
+      prefix: 'android',
+      postfix: 'stage',
+      tag: versionCode.to_s
+    )
+
+  # Push the new commit and tag back to your git remote - TODO: uncomment next lines only in case of remote deployer, i.e. Bitrise
+    # push_git_tags
+    # push_to_git_remote(
+    #   remote: "origin",         # optional, default: "origin"
+    #   remote_branch: "master", # optional, default is set to local_branch
+    # )
+  end
+end
+
+#############################IOS#############################
+
+platform :ios do
+
+  desc "Download appstore, release and development certificates"
+  lane :fetch_certificates do
+    sync_code_signing(
+      app_identifier: "ai.rossum.elis.capture",
+      type: "development",
+      readonly: true
+    )
+  end
+
+  desc "Build and deploy iOS app"
+  lane :stage do    
+
+    sync_code_signing(
+    app_identifier: "ai.rossum.elis.capture",
+    type: "appstore"
+    )
+
+    plistBuildNumber = get_build_number(
+      xcodeproj: XCODE_PROJECT_PATH,
+    ).to_i
+
+    latestTestflightBuildNumber = latest_testflight_build_number(app_identifier: "ai.rossum.elis.capture").to_i
+    resultBuildNumber = plistBuildNumber
+
+    if plistBuildNumber > latestTestflightBuildNumber 
+      resultBuildNumber = plistBuildNumber
+    elsif plistBuildNumber == latestTestflightBuildNumber
+      resultBuildNumber = plistBuildNumber.to_i + 1
+    else
+      puts "Warning, your fastlane build number is bigger then your xcode build number"
+      resultBuildNumber = latestTestflightBuildNumber.to_i + 1
+    end
+
+    increment_build_number(
+      build_number: resultBuildNumber.to_s,
+      xcodeproj: XCODE_PROJECT_PATH
+    )
+
+    build_ios_app(
+      scheme: "elisCapture",
+      configuration: "Release",
+      export_method: "app-store",
+      workspace: XCODE_WORKSPACE_PATH
+    )
+
+    if resultBuildNumber != plistBuildNumber 
+      # Commit the version bump
+      commit_version_bump(
+        xcodeproj: XCODE_PROJECT_PATH,
+        force: true
+      )
+    end
+
+
+    # Add a git tag for this build. This will automatically
+    # use an appropriate git tag name
+    add_git_tag
+
+    # Push the new commit and tag back to your git remote - TODO: uncomment next line only in case of remote deployer, i.e. Bitrise
+    # push_to_git_remote
+
+    pilot(
+      app_identifier: "ai.rossum.elis.capture",
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
+
+def check_envs(variables)
+  variables.each do |env|
+    unless present?(ENV[env])
+      raise "You need to specify #{env} environment"
+    end
+  end
+end
+
+def present?(value)
+  !value.nil? && !value.to_s.empty?
+end

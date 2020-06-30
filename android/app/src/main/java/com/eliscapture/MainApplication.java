@@ -1,4 +1,4 @@
-package com.eliscapture;
+package ai.rossum.elis.capture;
 
 import android.app.Application;
 import android.content.Context;

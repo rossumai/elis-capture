@@ -1,0 +1,2 @@
+apple_id "ios@rossum.ai"
+json_key_file "fastlane/elisCaptureFastlaneDeployment.json"

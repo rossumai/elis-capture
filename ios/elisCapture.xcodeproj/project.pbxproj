@@ -63,7 +63,7 @@
 		00E356F21AD99517003FC87E /* elisCaptureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = elisCaptureTests.m; sourceTree = "<group>"; };
 		04F937A4780042678D7EC550 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		05F00540D50E47DABBB17DD3 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* elisCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = elisCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Rossum Capture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rossum Capture.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = elisCapture/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = elisCapture/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -212,7 +212,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* elisCapture.app */,
+				13B07F961A680F5B00A75B9A /* Rossum Capture.app */,
 				00E356EE1AD99517003FC87E /* elisCaptureTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* elisCapture-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* elisCapture-tvOSTests.xctest */,
@@ -290,6 +290,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				91A3F5C0CAC98C314BE267DF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -297,7 +298,7 @@
 			);
 			name = elisCapture;
 			productName = elisCapture;
-			productReference = 13B07F961A680F5B00A75B9A /* elisCapture.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Rossum Capture.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2D02E47A1E0B4A5D006451C7 /* elisCapture-tvOS */ = {
@@ -513,6 +514,22 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		91A3F5C0CAC98C314BE267DF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-elisCapture/Pods-elisCapture-resources.sh",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-elisCapture/Pods-elisCapture-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D9DC0A295BAFF41E97349D34 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -712,8 +729,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = P3MQAMKB2Z;
 				INFOPLIST_FILE = elisCapture/Info.plist;
@@ -724,7 +742,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ai.rossum.elis.capture;
-				PRODUCT_NAME = elisCapture;
+				PRODUCT_NAME = "Rossum Capture";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development ai.rossum.elis.capture";
 				SWIFT_OBJC_BRIDGING_HEADER = "elisCapture-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -739,8 +757,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = P3MQAMKB2Z;
 				INFOPLIST_FILE = elisCapture/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -750,8 +769,8 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ai.rossum.elis.capture;
-				PRODUCT_NAME = elisCapture;
-				PROVISIONING_PROFILE_SPECIFIER = "match Development ai.rossum.elis.capture";
+				PRODUCT_NAME = "Rossum Capture";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore ai.rossum.elis.capture";
 				SWIFT_OBJC_BRIDGING_HEADER = "elisCapture-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

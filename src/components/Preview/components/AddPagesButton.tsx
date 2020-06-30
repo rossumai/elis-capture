@@ -15,8 +15,7 @@ const AddPagesButton = ({ onPress }: Props) => (
       position: 'absolute',
       alignItems: 'center',
       justifyContent: 'center',
-    }}
-  >
+    }}>
     <View
       style={{
         alignItems: 'center',
@@ -25,8 +24,7 @@ const AddPagesButton = ({ onPress }: Props) => (
         borderRadius: 80,
         width: 70,
         height: 70,
-      }}
-    >
+      }}>
       <Icon name="plus" type="material-community" color="white" />
       <Text style={{ color: 'white', fontSize: 11 }}>add pages</Text>
     </View>

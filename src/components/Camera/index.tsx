@@ -25,10 +25,11 @@ type Props = {
   onFlashModeChange: () => void;
   onCameraReady: () => void;
   getRef: RefObject<RNCamera>;
-  shoot: () => void;
+  shoot: () => Promise<void>;
   openPreview: () => void;
   send: () => void;
   sizeLimitExceeded: boolean;
+  addFileFromLibrary: () => Promise<void>;
 };
 
 const getRatioFraction = (ratio: string) => {
@@ -49,6 +50,7 @@ const Camera = ({
   shooting,
   openPreview,
   sizeLimitExceeded,
+  addFileFromLibrary,
 }: Props) => (
   <View
     style={{
@@ -66,6 +68,7 @@ const Camera = ({
       flashMode={RNCamera.Constants.FlashMode[flashMode]}
       ref={getRef}
       ratio={ratio}
+      captureAudio={false}
       onCameraReady={onCameraReady}
       autoFocus={RNCamera.Constants.AutoFocus.on}
     />
@@ -79,6 +82,7 @@ const Camera = ({
       onFlashModeChange={onFlashModeChange}
       flashMode={flashMode}
       send={send}
+      addFileFromLibrary={addFileFromLibrary}
     />
   </View>
 );

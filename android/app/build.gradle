@@ -128,11 +128,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.eliscapture"
+        applicationId "ai.rossum.elis.capture"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy 'react-native-camera', 'general'
-        versionCode 1
+        versionCode 18
         versionName "1.0"
     }
     splits {
