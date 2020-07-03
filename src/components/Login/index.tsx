@@ -1,9 +1,13 @@
+import { split } from 'lodash';
 import React from 'react';
 import {
+  AsyncStorage,
   EmitterSubscription,
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  NativeSyntheticEvent,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -11,31 +15,44 @@ import {
   View,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
-import { WebView } from 'react-native-webview';
+import { WebView, WebViewNavigation } from 'react-native-webview';
+import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { rootActionT } from '../../common/configureStore';
-import { CredentialsBody, validateCredentials } from '../../common/modules/user/actions';
+import { checkToken, CredentialsBody, validateCredentials } from '../../common/modules/user/actions';
 import { elisRegistrationUrl } from '../../constants/config';
+import { TOKEN } from '../../constants/config';
 import MessageContainer from '../Message';
 import Form from './components/Form';
 
 // tslint:disable-next-line:no-var-requires
 const logo = require('../../images/logo2.png');
 
+const CHECK_STORAGE: string = `
+  setTimeout(() => {
+    window.ReactNativeWebView.postMessage("Storage: " + window.localStorage.getItem('secureToken'));
+    true;
+  }, 100);
+`;
+
 type validateCredentialsT = {
   password: string;
   username: string;
 };
 
+type WebViewRef = null | WebView;
+
 type State = { username: string; password: string; keyboardIsOpen: boolean; webviewOpened: boolean; };
 type Props = {
   validate: (credentials: validateCredentialsT) => rootActionT;
+  checkToken: () => rootActionT;
 };
 
 class Login extends React.Component<Props, State> {
   keyboardDidShowListener?: EmitterSubscription;
   keyboardDidHideListener?: EmitterSubscription;
+  webview: WebViewRef = null;
 
   state = {
     username: '',
@@ -62,6 +79,25 @@ class Login extends React.Component<Props, State> {
 
   keyboardDidHide = () => this.setState({ keyboardIsOpen: false });
 
+  onNavigationStateChange = (navigationState: WebViewNavigation) => {
+    if (this.webview) {
+      this.webview.injectJavaScript(CHECK_STORAGE);
+    }
+  };
+
+  onMessage = (event: NativeSyntheticEvent<WebViewMessage>) => {
+    const { data } = event.nativeEvent;
+
+    if (data.includes('Storage:')) {
+      const token = split(data, "Storage: ", 2)[1];
+      if (token !== 'null') {
+        AsyncStorage.setItem(TOKEN, token)
+        this.props.checkToken();
+        return this.setState({ webviewOpened: false });
+      } return;
+    }
+  };
+
   renderWebview() {
     return (
       <>
@@ -74,12 +110,15 @@ class Login extends React.Component<Props, State> {
             <Icon name="arrow-left" type="material-community" color='#008fff' size={30} />
         </TouchableOpacity>
       </View>
-        <WebView 
+        <WebView
+          ref={(ref) => (this.webview = ref)}
           source={{
             uri: elisRegistrationUrl,
           }}
           allowsBackForwardNavigationGestures={true}
-          
+          onNavigationStateChange={this.onNavigationStateChange}
+          onMessage={this.onMessage}
+          startInLoadingState={true}
         />
       </>
     );
@@ -94,7 +133,7 @@ class Login extends React.Component<Props, State> {
       ) : (
         <View style={styles.backgroundContainer}>
         <StatusBar hidden={false} barStyle="light-content" />
-            <KeyboardAvoidingView behavior="padding" style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.select({ android: undefined, ios: 'padding' })} style={styles.container}>
               <MessageContainer />
               <View
                 style={{
@@ -144,7 +183,8 @@ class Login extends React.Component<Props, State> {
                 onUsernameChange={(value: string) => this.setState({ username: value })}
               />
             </KeyboardAvoidingView>
-            <TouchableOpacity
+            {!keyboardIsOpen &&
+              <TouchableOpacity
               style={styles.signUpButton}
               onPress={() => this.setState({ webviewOpened: true })}
             >
@@ -166,7 +206,7 @@ class Login extends React.Component<Props, State> {
                   Sign up.
               </Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
       )
     );
@@ -223,6 +263,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = (dispatch: Dispatch<rootActionT>) => ({
   validate: (body: CredentialsBody) => dispatch(validateCredentials(body)),
+  checkToken: () => dispatch(checkToken()),
 });
 
 export default connect(null, mapDispatchToProps)(Login);
