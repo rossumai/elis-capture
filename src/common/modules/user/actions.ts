@@ -2,7 +2,7 @@ import { AsyncStorage } from 'react-native';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { from, of as _of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { catchError, map, mapTo, mergeMap, pluck } from 'rxjs/operators';
+import { catchError, delay, map, mapTo, mergeMap, pluck } from 'rxjs/operators';
 import { apiUrl, TOKEN } from '../../../constants/config';
 import { displayMessage } from '../messages/actions';
 import { changeRoute } from '../route/actions';
@@ -83,6 +83,7 @@ export const loginUserFulfilledEpic = (action$: ActionsObservable<actionT>) =>
     // @ts-ignore
     pluck('payload', 'token'), // the type inference for pluck seems to be not working, TODO possibly introduce custom pluck which infers the types
     mergeMap((token: Token) => AsyncStorage.setItem(TOKEN, token)),
+    delay(1000),
     mapTo(changeRoute('/camera')),
   );
 
