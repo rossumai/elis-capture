@@ -132,7 +132,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy 'react-native-camera', 'general'
-        versionCode 18
+        versionCode 20
         versionName "1.0"
     }
     splits {
@@ -183,6 +183,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-webview')
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-image-resizer')
     implementation project(':react-native-image-picker')
