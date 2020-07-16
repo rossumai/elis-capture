@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/redux-logger": "^3.0.7",
     "expo-image-manipulator": "^8.0.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "lottie-ios": "3.1.3",
     "lottie-react-native": "^3.3.2",
     "memoize-one": "^5.1.1",
