@@ -127,12 +127,16 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    lintOptions { 
+        checkReleaseBuilds false // Add this
+    }
+
     defaultConfig {
         applicationId "ai.rossum.elis.capture"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy 'react-native-camera', 'general'
-        versionCode 20
+        versionCode 37
         versionName "1.0"
     }
     splits {
