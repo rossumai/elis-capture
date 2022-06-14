@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "api-6122999145647551961-697635",
+  "private_key_id": "d345de7b7dcf5af2b840d7bb2d1ee53ae0605bb6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDRTBgG8zv7Gofd\np/zzO4wFUwnl4o2jer47ndy+hs08jeIMGm41PKdiZ7opiHr6j76YTxULe+8oFmN9\nG5Ir4lL5savIVOQvCjZ6O8YvmLkn6CseqwSD0urxUwb21KHbaowqYDj4f/oK/Rzt\nKLLZfYi5RIPNklxnyKzkovp/w3c3Y1f7IKh8orETYIw1PcJktuaUUGyow01aYS3O\nSNuBTYnfaMsCxTbQcB1kEgeCkv7JJPo3i5b0m9HJL/3nQ/lFVWqULEdJG7y3TCM+\ngd529TQJPoqsU0jAkCGRyRwGH1eYATstegZnLFZ4+xALNy4pdUx3yShD9ARLubqy\nhTj/kUDDAgMBAAECggEAALDKrNZlSlZOlajZdoekJcS0noWh5KH0UNM+JOM9M8UJ\ngHYwQ6kELKQJsG+/5MDeOU5jRc+mdFgkFB6wewba7ZcObD/MWQngO5BOtKJuyza3\nO8CPmJvBk7ko4HqC0mNjA1KmFxMbmw9o7GFFzGFWytdN2yRCEWWwDC2dwdkknj+b\nXIe0gQXfowFxyTdMIwJ/vtxHRieGcyWy3roWIoP0UU6aE0zlPwpGXcwgXGLt2j+1\nq+xq5fOSJw+2bE/giyMiN/VLJjCAgJpvx9aL91oXz/HK2yahnSyxPIU51JqWMujR\nSyS/x3DoNSvzqK5UkW+rVIip+g7NCownhheeGsVBWQKBgQDvSzPbUHzq6I32oZex\niO58Bek3Fkz0ba37RkoPW0URoa3K/JWTUsGtI93D449Z4EDYldN2JZoGjHdEhQtT\nRHIeWQm/k/jchla4ceaw9GO5rByYvrm5rO/6tHSvfHO0vBkHAEsW5yBvLNCtgGX7\niTovlHpKlOkvtiois1GLPuFuzQKBgQDf6Maq5lqAwLTd0zAvOOVhm2Wn3c7yWBil\nSAOQo2pE0NwCvo72QI6LvFhvGw25+2CpLqYv1zZJPTJnAvKhb2uY94yba0GgPobW\nuuh9rysoPUt1N8oPKWn/Y1HnaXnOY72OOJpcyzyy+8p7yP60XMKVovCoooUYtAfJ\nvfnAwslNzwKBgDsGy+XfdtDjSJF7ztVmN520P5DtGVJ58561+fLLyr/Mp/gYUjUj\nBs9Ut5FogqXi4VwLqTvNjq7q20i1oNOLYLMHt5XgRFTxdlbNEeC4iBj20Z8D/QBG\nHnQzK01WX5xHgczuT5d4r9F8toT11TI06XtvHrNjBBpWzxH8NbMpcaZJAoGAeZ8o\n+n9xPWpvU+Z4z82p2uDb0NjMphpwGKcLOK9q88I3H05+vQfH5eMCbidVx2Xh1UO/\nhVDy7clN7WJOhJ3O5iHgwDL8TJxqBY0058AUQyE4MY2CNcYbC1vZi0dhoFfRCMV6\nI1lJuTbHf4FnyHRyRXFiI1dT0F1Jta15Udj8G0UCgYA/0QmAkh3nzcYHw8KTZIqk\n3CADoJQt5N102b+kGr14YlzGoJNnFGz2O+2q/H/W8Tl/oIycWaWuAeiGLRYEcIzE\nUAEvxTgoiS6dOwUIEd3Mx7NSF+pd7tgOroOGS++rLHHvSzTbAnw9/A2qcPf6vtWN\ntV+wYXDyiQ3J1k34ixB6yg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "rossum-app@api-6122999145647551961-697635.iam.gserviceaccount.com",
+  "client_id": "104326584675265393851",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/rossum-app%40api-6122999145647551961-697635.iam.gserviceaccount.com"
+}
