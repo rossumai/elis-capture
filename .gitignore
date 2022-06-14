@@ -1,6 +1,9 @@
 # Data sensitive files
 */fastlane/elisCaptureFastlaneDeployment.json
 */fastlane/.env
+rossumCaptureKeystore.jks
+upload_certificate.pem
+android/app/src/rossumCaptureKeystore.jks
 
 # OSX
 #
